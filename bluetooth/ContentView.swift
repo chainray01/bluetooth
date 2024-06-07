@@ -7,11 +7,15 @@
 
 import SwiftUI
 import CoreBluetooth
-struct ContentView: View {
-    @ObservedObject var bleManager = BLEManager() // 观察 BLE 管理类的对象
-    @State private var filterText = "" // 筛选文本
+import SwiftUI
+import CoreBluetooth
 
-    // 根据筛选文本筛选设备
+struct ContentView: View {
+    @ObservedObject var bleManager = BLEManager()
+    @State private var filterText = ""
+    @State private var selectedColor = Color.red
+    @State private var selectedSpeed = 1
+
     var filteredPeripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String)] {
         if filterText.isEmpty {
             return bleManager.peripherals
@@ -22,50 +26,27 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            // 顶部工具栏
             HStack {
-                // 启动或停止扫描按钮
-                Button(action: {
-                    bleManager.isScanning ? bleManager.stopScanning() : bleManager.startScanning()
-                }) {
-                    Text(bleManager.isScanning ? "停止扫描" : "开始扫描")
-                }
-                .padding()
-                
-                // 标题
                 Text("BLE 设备")
                     .font(.largeTitle)
                     .padding()
             }
-            
-            // 筛选框
             TextField("按名称筛选", text: $filterText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-            
-            // 列表显示扫描到的外围设备
+
             List(filteredPeripherals, id: \.peripheral.identifier) { item in
                 VStack(alignment: .leading) {
                     Text(item.localName)
                     Text("信号强度 (RSSI): \(item.rssi)")
-                    Button(action: {
-                        // 连接到所选设备
-                        bleManager.connect(to: item.peripheral)
-                    }) {
-                        Text("连接")
-                    }
                 }
             }
-            
-            // 如果已连接设备，显示其特征值
+
             if !bleManager.connectedPeripherals.isEmpty {
                 VStack {
                     Text("已连接的设备数: \(bleManager.connectedPeripherals.count) 个")
                     Button(action: {
- 
-                        let data =   bleManager.buildColorData(hex: "#32a0a8",  speed: 4)
-                        bleManager.writeValueToAll(data)
-                        
+                        sendColorAndSpeed()
                     }) {
                         Text("发送数据到所有设备")
                     }
@@ -77,7 +58,6 @@ struct ContentView: View {
                             if let characteristics = bleManager.characteristics[peripheral] {
                                 ForEach(characteristics, id: \.uuid) { characteristic in
                                     Text("特征值: \(characteristic.uuid)")
-                                
                                 }
                             }
                         }
@@ -85,9 +65,28 @@ struct ContentView: View {
                 }
                 .padding()
             }
+
+            ColorPicker("选择颜色", selection: $selectedColor)
+                .padding()
+
+            Picker("选择速度", selection: $selectedSpeed) {
+                ForEach(1...10, id: \.self) { speed in
+                    Text("\(speed)").tag(speed)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding()
         }
     }
+
+    func sendColorAndSpeed() {
+        let colorData = selectedColor.description.data(using: .utf8) ?? Data()
+        let speedData = "\(selectedSpeed)".data(using: .utf8) ?? Data()
+        let combinedData = colorData + speedData
+        bleManager.writeValueToAll(combinedData)
+    }
 }
+ 
 
 #Preview {
     ContentView()
