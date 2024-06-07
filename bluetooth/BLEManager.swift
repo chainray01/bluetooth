@@ -12,7 +12,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String)] = [] // 发现的外围设备
     @Published var connectedPeripherals: Set<CBPeripheral> = [] // 已连接的外围设备
     @Published var characteristics: [CBPeripheral: [CBCharacteristic]] = [:] // 每个外围设备的特征值
-    let  serviceUUID = CBUUID(string: "00007610-0000-1000-8000-00805F9B34FB")
+    let serviceUUID = CBUUID(string: "00007610-0000-1000-8000-00805F9B34FB")
     let characteristicUUID = CBUUID(string: "00007613-0000-1000-8000-00805F9B34FB")
     var centralManager: CBCentralManager!
     
@@ -21,8 +21,9 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         super.init()
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
         print("BLEManager 初始化")
+        startScanning()
     }
-
+    
     // 开始扫描外围设备
     func startScanning() {
         if centralManager.state == .poweredOn {
@@ -40,7 +41,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         centralManager.stopScan()
         print("停止扫描外围设备")
     }
-
+    
     // 连接到指定的外围设备
     func connect(to peripheral: CBPeripheral) {
         centralManager.connect(peripheral, options: nil)
@@ -68,7 +69,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             fatalError()
         }
     }
-
+    
     // 发现外围设备时调用
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String,
@@ -88,7 +89,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
         }
     }
-
+    
     // 连接外围设备成功时调用
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         connectedPeripherals.insert(peripheral)
@@ -98,7 +99,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         peripheral.delegate = self
         peripheral.discoverServices([serviceUUID])
     }
-
+    
     // 发现服务时调用
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         if let services = peripheral.services {
@@ -117,7 +118,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
         }
     }
-
+    
     // 发现特征值时调用
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if let characteristics = service.characteristics {
@@ -142,7 +143,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
         }
     }
-
+    
     // 读取特征值时调用
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         if let data = characteristic.value {
@@ -155,7 +156,22 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
         }
     }
-
+        
+    // 向所有已连接的设备写入数据
+    func writeValueToAll(_ data: Data) {
+        print("写入数据到所有已连接的外围设备")
+        for peripheral in connectedPeripherals {
+            if let characteristics = self.characteristics[peripheral] {
+                for characteristic in characteristics {
+                    // 检查特征值UUID是否匹配
+                   if characteristic.uuid == characteristicUUID{
+                        writeValue(data, for: characteristic, on: peripheral)
+                   }
+                }
+            }
+        }
+    }
+    
     // 写入数据到特征值
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, on peripheral: CBPeripheral) {
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
@@ -164,20 +180,56 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
     }
     
+    func buildColorData(hex: String, isEnabled: Bool=true, isSpeedEnabled: Bool=true, speed: Int) -> Data {
+        // Convert hex color string to RGB
+        let rgb = hexToRGB(hex: hex)
+        
+        // Set the "enabled" and "speed" flags
+        let enabledFlag: UInt8 = isEnabled ? UInt8(bitPattern: -1) : 0
+        let speedFlag: UInt8 = isSpeedEnabled ? UInt8(bitPattern: -1) : 0
+        
+        // Calculate the speed value
+        let speedValue: UInt8 = UInt8(((255 - (255 - (pow(16 - Double(speed), 2) - 1))) * pow(2, 24)).truncatingRemainder(dividingBy: 256))
+        
+        // Create an 8-byte array to hold the command data
+        var commandData = Data(count: 8)
+        
+        // Set the fixed command header
+        commandData[0] = 0xAA
+        commandData[1] = 0xA1
+        
+        // Set the RGB values
+        commandData[2] = rgb.red
+        commandData[3] = rgb.green
+        commandData[4] = rgb.blue
+        
+        // Set the "enabled" and "speed" flags
+        commandData[5] = enabledFlag
+        commandData[6] = speedFlag
+        
+        // Set the calculated speed value
+        commandData[7] = speedValue
+        
+        // Return the prepared Data
+        return commandData
+    }
     
-    // 向所有已连接的设备写入数据
-    func writeValueToAll(_ data: Data) {
-        print("写入数据到所有已连接的外围设备")
-        for peripheral in connectedPeripherals {
-            if let characteristics = self.characteristics[peripheral] {
-                for characteristic in characteristics {
-                    // 检查特征值UUID是否匹配
-                    if characteristic.uuid == CBUUID(string: "0000fff1-0000-1000-8000-00805f9b34fb") {
-                        writeValue(data, for: characteristic, on: peripheral)
-                    }
-                }
-            }
+    func hexToRGB(hex: String) -> (red: UInt8, green: UInt8, blue: UInt8) {
+        var hexString = hex
+        if hexString.hasPrefix("#") {
+            hexString.remove(at: hexString.startIndex)
         }
+        
+        let scanner = Scanner(string: hexString)
+        var hexNumber: UInt64 = 0
+        if scanner.scanHexInt64(&hexNumber) {
+            let red = UInt8((hexNumber & 0xFF0000) >> 16)
+            let green = UInt8((hexNumber & 0x00FF00) >> 8)
+            let blue = UInt8(hexNumber & 0x0000FF)
+            return (red, green, blue)
+        }
+        
+        return (0, 0, 0) // Default to black if the hex string is invalid
     }
 }
 

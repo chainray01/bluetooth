@@ -62,10 +62,10 @@ struct ContentView: View {
                 VStack {
                     Text("已连接的设备数: \(bleManager.connectedPeripherals.count) 个")
                     Button(action: {
-                        if let data = "Hello BLE".data(using: .utf8) {
-                            // 向所有已连接设备发送数据
-                            bleManager.writeValueToAll(data)
-                        }
+ 
+                        let data =   bleManager.buildColorData(hex: "#32a0a8",  speed: 4)
+                        bleManager.writeValueToAll(data)
+                        
                     }) {
                         Text("发送数据到所有设备")
                     }
