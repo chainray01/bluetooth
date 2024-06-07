@@ -7,15 +7,12 @@
 
 import SwiftUI
 import CoreBluetooth
-import SwiftUI
-import CoreBluetooth
 
 struct ContentView: View {
     @ObservedObject var bleManager = BLEManager()
     @State private var filterText = ""
     @State private var selectedColor = Color.red
-    @State private var selectedSpeed = 1
-
+    @State private var selectedSpeed   = Int(UInt8.min)
     var filteredPeripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String)] {
         if filterText.isEmpty {
             return bleManager.peripherals
@@ -23,7 +20,7 @@ struct ContentView: View {
             return bleManager.peripherals.filter { $0.localName.contains(filterText) }
         }
     }
-
+    
     var body: some View {
         VStack {
             HStack {
@@ -34,14 +31,14 @@ struct ContentView: View {
             TextField("按名称筛选", text: $filterText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-
+            
             List(filteredPeripherals, id: \.peripheral.identifier) { item in
                 VStack(alignment: .leading) {
                     Text(item.localName)
                     Text("信号强度 (RSSI): \(item.rssi)")
                 }
             }
-
+            
             if !bleManager.connectedPeripherals.isEmpty {
                 VStack {
                     Text("已连接的设备数: \(bleManager.connectedPeripherals.count) 个")
@@ -65,28 +62,52 @@ struct ContentView: View {
                 }
                 .padding()
             }
-
+            
             ColorPicker("选择颜色", selection: $selectedColor)
+                .onChange(of: selectedColor) {
+                    newValue in
+                        sendColorAndSpeed()}
+                .padding()
+            
+       
+            // Slider for speed selection
+            Slider(value: Binding(
+                get: { Double(selectedSpeed) },
+                set: { selectedSpeed = Int($0) }
+            ), in: Double(UInt8.min)...Double(UInt8.max), step: 1)
+                .padding()
+                .onChange(of: selectedSpeed) { newSpeed in
+                    sendColorAndSpeed()
+                }
+            
+            Text("Selected speed: \( selectedSpeed)")
                 .padding()
 
-            Picker("选择速度", selection: $selectedSpeed) {
-                ForEach(1...10, id: \.self) { speed in
-                    Text("\(speed)").tag(speed)
-                }
-            }
             .pickerStyle(SegmentedPickerStyle())
             .padding()
         }
     }
-
+    
     func sendColorAndSpeed() {
-        let colorData = selectedColor.description.data(using: .utf8) ?? Data()
-        let speedData = "\(selectedSpeed)".data(using: .utf8) ?? Data()
-        let combinedData = colorData + speedData
-        bleManager.writeValueToAll(combinedData)
+        let colorData =  toRGBUInt8(color:selectedColor)
+        let speedData = selectedSpeed
+        let data = bleManager.buildColorData(red: colorData.red,green: colorData.green,blue: colorData.blue, speed: speedData)
+        bleManager.writeValueToAll(data)
     }
 }
- 
+
+func toRGBUInt8(color:Color) -> (red: UInt8, green: UInt8, blue: UInt8) {
+    let components =  color.cgColor?.components
+                let red = components?[0] ?? 0
+                let green = components?[1] ?? 0
+                let blue = components?[2] ?? 0
+                return (
+                    red: UInt8(red * 255),
+                    green: UInt8(green * 255),
+                    blue: UInt8(blue * 255)
+                )
+    
+}
 
 #Preview {
     ContentView()

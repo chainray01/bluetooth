@@ -21,40 +21,16 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         super.init()
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
         print("BLEManager 初始化")
-        startScanning()
+ 
     }
     
-    // 开始扫描外围设备
-    func startScanning() {
-        if centralManager.state == .poweredOn {
-            isScanning = true
-            centralManager.scanForPeripherals(withServices: nil, options: nil)
-            print("开始扫描外围设备")
-        } else {
-            print("中央管理器未开启")
-        }
-    }
-    
-    // 停止扫描外围设备
-    func stopScanning() {
-        isScanning = false
-        centralManager.stopScan()
-        print("停止扫描外围设备")
-    }
-    
-    // 连接到指定的外围设备
-    func connect(to peripheral: CBPeripheral) {
-        centralManager.connect(peripheral, options: nil)
-        if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-            print("尝试连接到外围设备: \(localName)")
-        }
-    }
     
     // 中央管理器状态更新时调用
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
             print("蓝牙已开启")
+            startScanning()
         case .poweredOff:
             print("蓝牙已关闭")
         case .resetting:
@@ -69,6 +45,25 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             fatalError()
         }
     }
+    
+    // 开始扫描外围设备
+    func startScanning() {
+        if centralManager.state == .poweredOn {
+            isScanning = true
+            centralManager.scanForPeripherals(withServices: nil, options: nil)
+            print("开始扫描外围设备")
+        } else {
+            print("中央管理器未开启，当前状态: \(centralManager.state.rawValue)")
+        }
+    }
+    
+    // 停止扫描外围设备
+    func stopScanning() {
+        isScanning = false
+        centralManager.stopScan()
+        print("停止扫描外围设备")
+    }
+    
     
     // 发现外围设备时调用
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
@@ -87,7 +82,16 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
             // 按 RSSI 信号强度对设备排序
             peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
+            connect(to: peripheral)
         }
+    }
+    
+    // 连接到指定的外围设备
+    func connect(to peripheral: CBPeripheral) {
+            centralManager.connect(peripheral, options: nil)
+            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
+                print("尝试连接到外围设备: \(localName)")
+            }
     }
     
     // 连接外围设备成功时调用
@@ -165,7 +169,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
                 for characteristic in characteristics {
                     // 检查特征值UUID是否匹配
                    if characteristic.uuid == characteristicUUID{
-                        writeValue(data, for: characteristic, on: peripheral)
+                         writeValue(data, for: characteristic, on: peripheral)
                    }
                 }
             }
@@ -180,9 +184,9 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
     }
     
-    func buildColorData(hex: String, isEnabled: Bool=true, isSpeedEnabled: Bool=true, speed: Int) -> Data {
+    func buildColorData(red: UInt8,green:UInt8,blue:UInt8, isEnabled: Bool=true, isSpeedEnabled: Bool=true, speed: Int) -> Data {
         // Convert hex color string to RGB
-        let rgb = hexToRGB(hex: hex)
+       // let rgb = hexToRGB(hex: hex)
         
         // Set the "enabled" and "speed" flags
         let enabledFlag: UInt8 = isEnabled ? UInt8(bitPattern: -1) : 0
@@ -190,7 +194,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         
         // Calculate the speed value
         let speedValue: UInt8 = UInt8(((255 - (255 - (pow(16 - Double(speed), 2) - 1))) * pow(2, 24)).truncatingRemainder(dividingBy: 256))
-        
+        //let speedValue = UInt8(((255 - pow(16 - speed, 2) + 1)).truncatingRemainder(dividingBy: 256))
         // Create an 8-byte array to hold the command data
         var commandData = Data(count: 8)
         
@@ -199,9 +203,9 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         commandData[1] = 0xA1
         
         // Set the RGB values
-        commandData[2] = rgb.red
-        commandData[3] = rgb.green
-        commandData[4] = rgb.blue
+        commandData[2] = red
+        commandData[3] =  green
+        commandData[4] = blue
         
         // Set the "enabled" and "speed" flags
         commandData[5] = enabledFlag
