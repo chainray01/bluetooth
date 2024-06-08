@@ -17,7 +17,10 @@ struct FavoritesView: View {
             ColorPicker("选择颜色", selection: $selectedColor)
                 .onChange(of: selectedColor) {
                     newValue in
-                       sendColorAndSpeed()
+                    
+                        sendColorAndSpeed()
+                    }
+                      
                 }
                 .padding()
             // Slider for speed selection
