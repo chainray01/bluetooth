@@ -10,9 +10,11 @@ import SwiftUI
 
 @main
 struct bluetoothApp: App {
+      
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
     }
 }
+ 

@@ -15,7 +15,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     let serviceUUID = CBUUID(string: "00007610-0000-1000-8000-00805F9B34FB")
     let characteristicUUID = CBUUID(string: "00007613-0000-1000-8000-00805F9B34FB")
     var centralManager: CBCentralManager!
-    
+    static let shared = BLEManager()
     // 初始化 BLE 管理类
     override init() {
         super.init()
@@ -83,25 +83,30 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             // 按 RSSI 信号强度对设备排序
             peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
             connect(to: peripheral)
+            
         }
     }
     
     // 连接到指定的外围设备
     func connect(to peripheral: CBPeripheral) {
+        if !connectedPeripherals.contains(peripheral){
             centralManager.connect(peripheral, options: nil)
             if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
                 print("尝试连接到外围设备: \(localName)")
             }
+        }
     }
     
     // 连接外围设备成功时调用
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         connectedPeripherals.insert(peripheral)
+        
         if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
             print("已连接到外围设备: \(localName)")
         }
         peripheral.delegate = self
         peripheral.discoverServices([serviceUUID])
+        
     }
     
     // 发现服务时调用
@@ -163,7 +168,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         
     // 向所有已连接的设备写入数据
     func writeValueToAll(_ data: Data) {
-        print("写入数据到所有已连接的外围设备")
         for peripheral in connectedPeripherals {
             if let characteristics = self.characteristics[peripheral] {
                 for characteristic in characteristics {
@@ -182,58 +186,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
             print("写入数据到特征值: \(characteristic.uuid) 在外围设备: \(localName)")
         }
-    }
-    
-    func buildColorData(red: UInt8,green:UInt8,blue:UInt8, isEnabled: Bool=true, isSpeedEnabled: Bool=true, speed: Int) -> Data {
-        // Convert hex color string to RGB
-       // let rgb = hexToRGB(hex: hex)
-        
-        // Set the "enabled" and "speed" flags
-        let enabledFlag: UInt8 = isEnabled ? UInt8(bitPattern: -1) : 0
-        let speedFlag: UInt8 = isSpeedEnabled ? UInt8(bitPattern: -1) : 0
-        
-        // Calculate the speed value
-        let speedValue: UInt8 = UInt8(((255 - (255 - (pow(16 - Double(speed), 2) - 1))) * pow(2, 24)).truncatingRemainder(dividingBy: 256))
-        //let speedValue = UInt8(((255 - pow(16 - speed, 2) + 1)).truncatingRemainder(dividingBy: 256))
-        // Create an 8-byte array to hold the command data
-        var commandData = Data(count: 8)
-        
-        // Set the fixed command header
-        commandData[0] = 0xAA
-        commandData[1] = 0xA1
-        
-        // Set the RGB values
-        commandData[2] = red
-        commandData[3] =  green
-        commandData[4] = blue
-        
-        // Set the "enabled" and "speed" flags
-        commandData[5] = enabledFlag
-        commandData[6] = speedFlag
-        
-        // Set the calculated speed value
-        commandData[7] = speedValue
-        
-        // Return the prepared Data
-        return commandData
-    }
-    
-    func hexToRGB(hex: String) -> (red: UInt8, green: UInt8, blue: UInt8) {
-        var hexString = hex
-        if hexString.hasPrefix("#") {
-            hexString.remove(at: hexString.startIndex)
-        }
-        
-        let scanner = Scanner(string: hexString)
-        var hexNumber: UInt64 = 0
-        if scanner.scanHexInt64(&hexNumber) {
-            let red = UInt8((hexNumber & 0xFF0000) >> 16)
-            let green = UInt8((hexNumber & 0x00FF00) >> 8)
-            let blue = UInt8(hexNumber & 0x0000FF)
-            return (red, green, blue)
-        }
-        
-        return (0, 0, 0) // Default to black if the hex string is invalid
     }
 }
 
