@@ -67,24 +67,25 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     
     // 发现外围设备时调用
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String,
-           localName.hasPrefix("MD") || peripheral.name == "MD000000000000" {
-            print("发现外围设备: \(localName) 信号强度: \(RSSI)")
+        if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String{
             if !peripherals.contains(where: { $0.peripheral == peripheral }) {
                 peripherals.append((peripheral, RSSI, localName))
-                print("将设备添加到列表: \(localName) 信号强度: \(RSSI)")
+              
             } else {
                 if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
                     peripherals[index].rssi = RSSI
                     peripherals[index].localName = localName
-                    print("更新设备信号强度: \(localName) 信号强度: \(RSSI)")
                 }
             }
             // 按 RSSI 信号强度对设备排序
             peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
-            connect(to: peripheral)
-            
+            if localName.hasPrefix("MD") || peripheral.name == "MD000000000000" {
+                connect(to: peripheral)
+            }
+     
         }
+ 
+        
     }
     
     // 连接到指定的外围设备
@@ -136,14 +137,14 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
             self.characteristics[peripheral, default: []].append(contentsOf: characteristics)
             for characteristic in characteristics {
-                print("发现特征值: \(characteristic.uuid)")
+                print("发现特征值: \(characteristic.uuid),服务: \(service.uuid)")
                 if characteristic.properties.contains(.read) {
                     peripheral.readValue(for: characteristic)
-                    //print("读取特征值: \(characteristic.uuid)")
+                    print("读取特征值: \(characteristic.uuid)")
                 }
                 if characteristic.properties.contains(.notify) {
                     peripheral.setNotifyValue(true, for: characteristic)
-                    //print("设置特征值通知: \(characteristic.uuid)")
+                    print("设置特征值通知: \(characteristic.uuid)")
                 }
             }
         } else {
@@ -165,6 +166,20 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             }
         }
     }
+    
+    //外围设备断开连接
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
+            print("外围设备断开连接: \(localName)")
+        }
+        connectedPeripherals.remove(peripheral)
+        peripherals.removeAll { $0.peripheral == peripheral }
+        characteristics.removeValue(forKey: peripheral)
+
+ 
+    }
+
+    
         
     // 向所有已连接的设备写入数据
     func writeValueToAll(_ data: Data) {
@@ -186,6 +201,27 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
             print("写入数据到特征值: \(characteristic.uuid) 在外围设备: \(localName)")
         }
+    }
+    
+    // 断开所有连接
+    func disconnectAll() {
+        for peripheral in connectedPeripherals {
+            centralManager.cancelPeripheralConnection(peripheral)
+            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
+                print("断开与外围设备的连接: \(localName)")
+            }
+        }
+        connectedPeripherals.removeAll()
+    }
+    
+    // 断开所有连接
+    func disconnectDevice(_ peripheral:CBPeripheral) {
+            centralManager.cancelPeripheralConnection(peripheral)
+            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
+                print("断开与外围设备的连接: \(localName)")
+            }
+        
+        connectedPeripherals.remove(peripheral)
     }
 }
 

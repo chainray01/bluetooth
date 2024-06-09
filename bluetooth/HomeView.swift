@@ -23,7 +23,7 @@ struct HomeView: View {
                 }
                 .listStyle(PlainListStyle())
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+            .tabViewStyle(DefaultTabViewStyle())
             .navigationTitle("Bluetooth Devices")
         }}
 }

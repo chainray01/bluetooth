@@ -11,6 +11,9 @@ import CoreBluetooth
 struct ContentView: View {
     var body: some View {
         TabView{
+            DiscoverView().tabItem {
+                Label("discover", systemImage: "list.bullet")
+            }
             HomeView( ).tabItem {
                 Label("device", systemImage: "list.bullet")
             }

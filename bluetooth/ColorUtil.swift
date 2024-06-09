@@ -20,11 +20,7 @@ class ColorUtil{
             green: UInt8(green * 255),
             blue: UInt8(blue * 255)
         )
-        
     }
-    
-    
- 
     /// 颜色数据转荧光棒字节数组
     /// - Parameters:
     ///   - red: red
