@@ -203,7 +203,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
 
           dispatchGroup.notify(queue: .main) {
              // self.isSending = false
-              print("所有数据写入完成")
+            //  print("所有数据写入完成")
           }
     }
  

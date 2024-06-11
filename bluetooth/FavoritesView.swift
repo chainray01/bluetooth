@@ -1,3 +1,10 @@
+
+//
+//  FavoritesView.swift
+//  bluetooth
+//
+//  Created by Ray chai on 2024/5/28.
+//
 import SwiftUI
 import CoreBluetooth
 
@@ -60,7 +67,7 @@ struct FavoritesView: View {
         else{
             bleManager.sendColorAndSpeed(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
         }
-      //  bleManager.sendColorAndSpeed(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
+    
     }
 
 }

@@ -16,6 +16,8 @@
 		90492FCE2C143ED800DB074C /* ColorSelecterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCD2C143ED800DB074C /* ColorSelecterView.swift */; };
 		90492FD02C14409700DB074C /* ColorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCF2C14409700DB074C /* ColorUtil.swift */; };
 		90999DD62C11FA6800644AFC /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90999DD52C11FA6800644AFC /* BLEManager.swift */; };
+		90BF1DB42C1896D00097BA82 /* ColorSlidersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BF1DB32C1896D00097BA82 /* ColorSlidersView.swift */; };
+		90BF1DB62C1897BA0097BA82 /* ColorGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BF1DB52C1897BA0097BA82 /* ColorGridView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,6 +45,8 @@
 		90492FCF2C14409700DB074C /* ColorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorUtil.swift; sourceTree = "<group>"; };
 		90999DD52C11FA6800644AFC /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		90999DD72C12000E00644AFC /* bluetooth.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = bluetooth.entitlements; sourceTree = "<group>"; };
+		90BF1DB32C1896D00097BA82 /* ColorSlidersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSlidersView.swift; sourceTree = "<group>"; };
+		90BF1DB52C1897BA0097BA82 /* ColorGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorGridView.swift; sourceTree = "<group>"; };
 		90DE94A82C104AB4007D2C0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -88,6 +92,8 @@
 				901F592D2C05CF3600CCD859 /* Preview Content */,
 				90999DD52C11FA6800644AFC /* BLEManager.swift */,
 				90492FCF2C14409700DB074C /* ColorUtil.swift */,
+				90BF1DB32C1896D00097BA82 /* ColorSlidersView.swift */,
+				90BF1DB52C1897BA0097BA82 /* ColorGridView.swift */,
 			);
 			path = bluetooth;
 			sourceTree = "<group>";
@@ -179,6 +185,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				90492FCC2C143D2C00DB074C /* FavoritesView.swift in Sources */,
+				90BF1DB62C1897BA0097BA82 /* ColorGridView.swift in Sources */,
+				90BF1DB42C1896D00097BA82 /* ColorSlidersView.swift in Sources */,
 				901F592A2C05CF3600CCD859 /* ContentView.swift in Sources */,
 				90999DD62C11FA6800644AFC /* BLEManager.swift in Sources */,
 				90492FD02C14409700DB074C /* ColorUtil.swift in Sources */,
