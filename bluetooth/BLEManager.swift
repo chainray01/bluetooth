@@ -3,7 +3,7 @@ import CoreBluetooth
 import SwiftUI
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     @Published var isScanning = false // 是否正在扫描
-    @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String)] = [] // 发现的外围设备
+    @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String?)] = [] // 发现的外围设备
     @Published var connectedPeripherals: Set<CBPeripheral> = [] // 已连接的外围设备
     @Published var characteristics: [CBPeripheral: [CBCharacteristic]] = [:] // 每个外围设备的特征值
 
@@ -64,17 +64,15 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     func stopScanning() {
-        if isScanning{
+        if isScanning {
             isScanning = false
             centralManager.stopScan()
             stopTimer()
-            print("停止扫描外围设备")
-        }
+         }
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
-            //print("发现外围设备: \(localName) 信号强度: \(RSSI)")
             if !peripherals.contains(where: { $0.peripheral == peripheral }) {
                 peripherals.append((peripheral, RSSI, localName))
                 print("将设备添加到列表: \(localName) 信号强度: \(RSSI)")
@@ -232,11 +230,12 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     
     
     func toggleScanning() {
-        if isScanning {
-            stopScanning()
-        } else {
+        isScanning ? 
+        stopScanning() :
+        {
+            characteristics = characteristics.filter { connectedPeripherals.contains($0.key) }
             startScanning()
-        }
+        }()
     }
     func stopTimer() {
         scanTimer?.invalidate()

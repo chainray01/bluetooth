@@ -13,7 +13,7 @@ struct DiscoverView: View {
                 Button(action: {
                     bleManager.toggleScanning()
                 }) {
-                    Text(bleManager.isScanning ? "停止扫描" : "开始扫描")
+                    Text(bleManager.isScanning ? "正在扫描:\(bleManager.connectedPeripherals.count)" : "已暂停")
                         .padding(.trailing)
                 }
             }
@@ -23,7 +23,7 @@ struct DiscoverView: View {
                 VStack(alignment: .leading) {
                     HStack {
                         VStack(alignment: .leading, spacing: 5) {
-                            Text(item.localName)
+                            Text(item.localName ?? item.peripheral.identifier.uuidString)
                                 .font(.headline)
                                 .foregroundColor(.primary)
                             Text("信号强度 (RSSI): \(item.rssi)")

@@ -40,7 +40,11 @@ class ColorUtil{
         let speedFlag: UInt8 = isSpeedEnabled ? UInt8(bitPattern: -1) : 0
         
         // Calculate the speed value
-        let speedValue: UInt8 = UInt8(((255 - (255 - (pow(16 - Double(speed), 2) - 1))) * pow(2, 24)).truncatingRemainder(dividingBy: 256))
+        let result = pow(16 - speed, 2) - 1
+        let speedValue: UInt8 = UInt8(result) & 0xFF
+
+        
+       // let speedValue: UInt8 = UInt8(pow(Double(16 - speed), 2) - 1) & 0xFF
         //let speedValue = UInt8(((255 - pow(16 - speed, 2) + 1)).truncatingRemainder(dividingBy: 256))
         // Create an 8-byte array to hold the command data
         var commandData = Data(count: 8)
@@ -65,22 +69,23 @@ class ColorUtil{
         return commandData
     }
     
-    static func hexToRGB(hex: String) -> (red: UInt8, green: UInt8, blue: UInt8) {
-        var hexString = hex
-        if hexString.hasPrefix("#") {
-            hexString.remove(at: hexString.startIndex)
-        }
-        
-        let scanner = Scanner(string: hexString)
-        var hexNumber: UInt64 = 0
-        if scanner.scanHexInt64(&hexNumber) {
-            let red = UInt8((hexNumber & 0xFF0000) >> 16)
-            let green = UInt8((hexNumber & 0x00FF00) >> 8)
-            let blue = UInt8(hexNumber & 0x0000FF)
-            return (red, green, blue)
-        }
-        
-        return (0, 0, 0) // Default to black if the hex string is invalid
+    static func argbToColor(argb: String) ->   Color {
+                // 清理字符串并转换为大写
+               var cleanedArgbString = argb.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+               // 移除前缀 #
+               if cleanedArgbString.hasPrefix("#") {
+                   cleanedArgbString.remove(at: cleanedArgbString.startIndex)
+               }
+               // 将字符串转换为数字
+               var argbValue: UInt64 = 0
+               Scanner(string: cleanedArgbString).scanHexInt64(&argbValue)
+               
+               // 解析颜色分量
+               let alpha = CGFloat((argbValue & 0xFF000000) >> 24) / 255.0
+               let red = CGFloat((argbValue & 0x00FF0000) >> 16) / 255.0
+               let green = CGFloat((argbValue & 0x0000FF00) >> 8) / 255.0
+               let blue = CGFloat(argbValue & 0x000000FF) / 255.0
+            return Color(cgColor: .init(srgbRed: red, green: green, blue: blue, alpha: alpha))
     }
     
     

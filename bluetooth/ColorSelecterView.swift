@@ -40,13 +40,17 @@ struct ColorGridView: View {
             }
             colors.append(rowColors)
         }
+        let fksj =  [ColorUtil.argbToColor(argb: "#FF3F6C7D"),ColorUtil.argbToColor(argb: "#FF4AC9E3"),ColorUtil.argbToColor(argb: "#FF0092BD")];
+        colors.append(fksj)
+      
+    
         return colors
     }()
 
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                Spacer().frame(height: 0) // 添加距离顶部的空间
+                //Spacer().frame(height: 0) // 添加距离顶部的空间
                 VStack(spacing: 3) {
                     ForEach(0..<colors.count, id: \.self) { row in
                         HStack(spacing: 3) {
@@ -54,7 +58,6 @@ struct ColorGridView: View {
                                 colors[row][col]
                                     .onTapGesture {
                                         selectedColor = colors[row][col]
-                                    //    onColorSelected(colors[row][col])
                                     }
                                     .frame(width: min(geometry.size.width / 10 , 35), height: min(geometry.size.height / 10 , 35)) // 自适应大小
                                     .clipShape(Circle())
@@ -76,16 +79,19 @@ struct ColorSlidersView: View {
     var body: some View {
         VStack(spacing: 20) {
             Slider(value: $hue, in: 0...1)
-                .accentColor(.secondary)
+                .accentColor(Color.init(hue: hue, saturation: saturation, brightness: brightness))
+                
             Text("色相: \(hue, specifier: "%.2f")")
 
             Slider(value: $saturation, in: 0...1)
-                .accentColor(.green)
+                .accentColor(Color.green).saturation(saturation)
             Text("饱和度: \(saturation, specifier: "%.2f")")
 
             Slider(value: $brightness, in: 0...1)
-                .accentColor(.blue)
+                .accentColor(.blue).brightness(brightness > 0.4 ? 0.4 : brightness)
             Text("亮度: \(brightness, specifier: "%.2f")")
+            
+
         }
         .onChange(of: hue) { _ in updateColor() }
         .onChange(of: saturation) { _ in updateColor() }
@@ -104,7 +110,9 @@ struct ColorSlidersView: View {
         selectedColor = Color(hue: hue, saturation: saturation, brightness: brightness)
     }
 }
+ 
 
+ 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         ColorSelecterView(selectedColor: .constant(Color.white))
