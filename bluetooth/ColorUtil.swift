@@ -31,7 +31,7 @@ class ColorUtil{
     ///   - speed: 闪烁速度
     /// - Returns: 字节数组
     static func buildColorData(red: UInt8,  green:UInt8,    blue:UInt8, isEnabled: Bool=true,
-                               isSpeedEnabled: Bool=true, speed: Double) -> Data {
+                               isSpeedEnabled: Bool=false, speed: Double) -> Data {
         // Convert hex color string to RGB
         // let rgb = hexToRGB(hex: hex)
         

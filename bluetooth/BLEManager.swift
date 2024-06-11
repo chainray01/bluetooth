@@ -1,6 +1,6 @@
 import Foundation
 import CoreBluetooth
-
+import SwiftUI
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     @Published var isScanning = false // 是否正在扫描
     @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String)] = [] // 发现的外围设备
@@ -11,6 +11,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     let characteristicUUID = CBUUID(string: "00007613-0000-1000-8000-00805F9B34FB")
     var centralManager: CBCentralManager!
     static let shared = BLEManager()
+
+    var scanTimer: Timer?
 
     override init() {
         super.init()
@@ -25,15 +27,27 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             startScanning()
         case .poweredOff:
             print("蓝牙已关闭")
+            stopScanning()
+            stopTimer()
         case .resetting:
             print("蓝牙正在重置")
+            stopScanning()
+            stopTimer()
         case .unauthorized:
             print("蓝牙未授权")
+            stopScanning()
+            stopTimer()
         case .unsupported:
             print("蓝牙不支持")
+            stopScanning()
+            stopTimer()
         case .unknown:
             print("蓝牙状态未知")
+            stopScanning()
+            stopTimer()
         @unknown default:
+            stopScanning()
+            stopTimer()
             fatalError()
         }
     }
@@ -41,7 +55,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func startScanning() {
         if centralManager.state == .poweredOn {
             isScanning = true
-            centralManager.scanForPeripherals(withServices: nil, options: nil)
+            scanTimer?.invalidate()
+            startTimer()
             print("开始扫描外围设备")
         } else {
             print("中央管理器未开启，当前状态: \(centralManager.state.rawValue)")
@@ -49,14 +64,17 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     func stopScanning() {
-        isScanning = false
-        centralManager.stopScan()
-        print("停止扫描外围设备")
+        if isScanning{
+            isScanning = false
+            centralManager.stopScan()
+            stopTimer()
+            print("停止扫描外围设备")
+        }
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
-            print("发现外围设备: \(localName) 信号强度: \(RSSI)")
+            //print("发现外围设备: \(localName) 信号强度: \(RSSI)")
             if !peripherals.contains(where: { $0.peripheral == peripheral }) {
                 peripherals.append((peripheral, RSSI, localName))
                 print("将设备添加到列表: \(localName) 信号强度: \(RSSI)")
@@ -64,10 +82,10 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
                 if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
                     peripherals[index].rssi = RSSI
                     peripherals[index].localName = localName
-                    print("更新设备信号强度: \(localName) 信号强度: \(RSSI)")
+                  //  print("更新设备信号强度: \(localName) 信号强度: \(RSSI)")
                 }
             }
-            peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }            
+            peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
             if localName.hasPrefix("MD") || peripheral.name == "MD000000000000" {
                 connect(to: peripheral)
             }
@@ -98,7 +116,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
         connectedPeripherals.remove(peripheral)
         characteristics.removeValue(forKey: peripheral)
-        
         if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
             print("外围设备断开连接: \(localName)")
         }
@@ -188,6 +205,48 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
     
     
+    func sendColorAndSpeed(_ color:Color,_ isEnabled:Bool=true,_ isSpeedEnabled:Bool = false,speed:Double) {
+        let colorData = ColorUtil.toRGBUInt8(color: color)
+        let data = ColorUtil.buildColorData(
+            red: colorData.red,
+            green: colorData.green,
+            blue: colorData.blue,
+            isEnabled: isEnabled,
+            isSpeedEnabled: isSpeedEnabled,
+            speed: speed
+        )
+        writeValueToAll(data)
+    }
     
-}
+    func sendColorIntAndSpeed(_ red:UInt8,_ green:UInt8,_ blue:UInt8,_ isEnabled:Bool=true,_ isSpeedEnabled:Bool = false,speed:Double) {
+        let data = ColorUtil.buildColorData(
+            red: red,
+            green: green,
+            blue: blue,
+            isEnabled: isEnabled,
+            isSpeedEnabled: isSpeedEnabled,
+            speed: speed
+        )
+        writeValueToAll(data)
+    }
+    
+    
+    func toggleScanning() {
+        if isScanning {
+            stopScanning()
+        } else {
+            startScanning()
+        }
+    }
+    func stopTimer() {
+        scanTimer?.invalidate()
+        scanTimer = nil
+    }
 
+    private func startTimer() {
+        scanTimer?.invalidate()
+        scanTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
+            self.centralManager.scanForPeripherals(withServices: nil, options: nil)
+        }
+    }
+}

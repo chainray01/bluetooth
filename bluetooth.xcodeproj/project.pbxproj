@@ -13,7 +13,7 @@
 		901F592F2C05CF3600CCD859 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 901F592E2C05CF3600CCD859 /* Preview Assets.xcassets */; };
 		902308EC2C158B9C004A6373 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902308EB2C158B9C004A6373 /* DiscoverView.swift */; };
 		90492FCC2C143D2C00DB074C /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCB2C143D2C00DB074C /* FavoritesView.swift */; };
-		90492FCE2C143ED800DB074C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCD2C143ED800DB074C /* HomeView.swift */; };
+		90492FCE2C143ED800DB074C /* ColorSelecterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCD2C143ED800DB074C /* ColorSelecterView.swift */; };
 		90492FD02C14409700DB074C /* ColorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCF2C14409700DB074C /* ColorUtil.swift */; };
 		90999DD62C11FA6800644AFC /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90999DD52C11FA6800644AFC /* BLEManager.swift */; };
 /* End PBXBuildFile section */
@@ -39,7 +39,7 @@
 		901F592E2C05CF3600CCD859 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		902308EB2C158B9C004A6373 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		90492FCB2C143D2C00DB074C /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
-		90492FCD2C143ED800DB074C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		90492FCD2C143ED800DB074C /* ColorSelecterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSelecterView.swift; sourceTree = "<group>"; };
 		90492FCF2C14409700DB074C /* ColorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorUtil.swift; sourceTree = "<group>"; };
 		90999DD52C11FA6800644AFC /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		90999DD72C12000E00644AFC /* bluetooth.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = bluetooth.entitlements; sourceTree = "<group>"; };
@@ -82,7 +82,7 @@
 				901F59272C05CF3600CCD859 /* bluetoothApp.swift */,
 				901F59292C05CF3600CCD859 /* ContentView.swift */,
 				90492FCB2C143D2C00DB074C /* FavoritesView.swift */,
-				90492FCD2C143ED800DB074C /* HomeView.swift */,
+				90492FCD2C143ED800DB074C /* ColorSelecterView.swift */,
 				902308EB2C158B9C004A6373 /* DiscoverView.swift */,
 				901F592B2C05CF3600CCD859 /* Assets.xcassets */,
 				901F592D2C05CF3600CCD859 /* Preview Content */,
@@ -183,7 +183,7 @@
 				90999DD62C11FA6800644AFC /* BLEManager.swift in Sources */,
 				90492FD02C14409700DB074C /* ColorUtil.swift in Sources */,
 				902308EC2C158B9C004A6373 /* DiscoverView.swift in Sources */,
-				90492FCE2C143ED800DB074C /* HomeView.swift in Sources */,
+				90492FCE2C143ED800DB074C /* ColorSelecterView.swift in Sources */,
 				901F59282C05CF3600CCD859 /* bluetoothApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -243,7 +243,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -301,7 +301,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -332,7 +332,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -370,7 +370,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

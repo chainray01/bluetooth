@@ -14,9 +14,9 @@ struct ContentView: View {
             DiscoverView().tabItem {
                 Label("discover", systemImage: "list.bullet")
             }
-            HomeView( ).tabItem {
-                Label("device", systemImage: "list.bullet")
-            }
+//            ColorSelecterView( ).tabItem {
+//                Label("device", systemImage: "list.bullet")
+//            }
             FavoritesView( )
                 .tabItem {
                     Label("Favorites", systemImage: "star")
