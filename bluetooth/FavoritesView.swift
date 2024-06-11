@@ -35,7 +35,9 @@ struct FavoritesView: View {
             HStack{
                 Slider(value:  $selectedSpeed, in: 0...15,step: 1).onChange(of: selectedSpeed)
                 { newColor in
-                    handleColorChange(selectedColor)
+                    DispatchQueue.main.async {
+                        handleColorChange(selectedColor)
+                    }
                 }
                 Text("速度\(selectedSpeed, specifier: "%.0f")")}
             .padding(.bottom,0).padding(.top,5)

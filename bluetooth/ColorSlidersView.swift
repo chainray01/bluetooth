@@ -5,7 +5,7 @@
 //  Created by Ray chai on 2024/6/11.
 //
 
-import SwiftUI 
+import SwiftUI
 
 /// 颜色滑块视图，允许用户通过滑块调整颜色
 struct ColorSlidersView: View {
@@ -15,72 +15,88 @@ struct ColorSlidersView: View {
     @State private var brightness: Double = 0.5
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 5) {
             Slider(value: $hue, in: 0...1)
                 .accentColor(Color(hue: hue, saturation: saturation, brightness: brightness))
-            Text("色相: \(hue, specifier: "%.2f")")
+            Text("色相: \(hue, specifier: "%.2f")").foregroundStyle(Color.blue)
 
             Slider(value: $saturation, in: 0...1)
                 .accentColor(Color.green).saturation(saturation)
-            Text("饱和度: \(saturation, specifier: "%.2f")")
+            Text("饱和度: \(saturation, specifier: "%.2f")").foregroundStyle(Color.blue)
 
             Slider(value: $brightness, in: 0...1)
                 .accentColor(.blue).brightness(brightness > 0.4 ? 0.4 : brightness)
-            Text("亮度: \(brightness, specifier: "%.2f")")
+            Text("亮度: \(brightness, specifier: "%.2f")").foregroundStyle(Color.blue)
 
             let fksj = ColorUtil.argbToColor(argb: "#FF3F6C7D")
             let aqws = ColorUtil.argbToColor(argb: "#FF4AC9E3")
             let rshh = ColorUtil.argbToColor(argb: "#FF0092BD")
 
-            HStack(spacing: 20) {
+            HStack(spacing: 10) {
                 VStack {
                     Circle()
                         .fill(selectedColor)
-                        .frame(width: 50, height: 50)
+                        .frame(width: 45, height: 45)
                         .onTapGesture {
                             selectedColor = selectedColor
                             updateSliders(with: selectedColor)
                         }
-                    Text("HSL颜色")
+                    Text("HSL颜色").font(.caption)
+                       // .padding(5)
+                        .background(Color.green.opacity(0.2))
+                        .cornerRadius(5).foregroundColor(fksj)
                 }
                 VStack {
                     Circle()
                         .fill(fksj)
-                        .frame(width: 50, height: 50)
+                        .frame(width: 45, height: 45)
                         .onTapGesture {
                             selectedColor = fksj
                             updateSliders(with: fksj)
                         }
-                    Text("疯狂世界")
+                    Text("疯狂世界")                             .font(.caption)
+                       // .padding(5)
+                        .background(Color.green.opacity(0.2))
+                        .cornerRadius(5).foregroundColor(fksj)
                 }
                 VStack {
                     Circle()
                         .fill(aqws)
-                        .frame(width: 50, height: 50)
+                        .frame(width: 45, height: 45)
                         .onTapGesture {
                             selectedColor = aqws
                             updateSliders(with: aqws)
                         }
-                    Text("爱情万岁")
-                        .font(.caption)
+                    Text("爱情万岁")                             .font(.caption)
+                       // .padding(5)
+                        .background(Color.green.opacity(0.2))
+                        .cornerRadius(5).foregroundColor(aqws)
                 }
                 VStack {
                     Circle()
                         .fill(rshh)
-                        .frame(width: 50, height: 50)
+                        .frame(width: 45, height: 45)
                         .onTapGesture {
                             selectedColor = rshh
                             updateSliders(with: rshh)
                         }
-                    Text("人生海海")
-                        .font(.caption)
+                    Text("人生海海")                             .font(.caption)
+                       // .padding(5)
+                        .background(Color.green.opacity(0.2))
+                        .cornerRadius(5).foregroundColor(rshh)
                 }
             }
-            .padding(.top, 20)
+            .padding(.top, 10)
         }
-        .onChange(of: hue) { _ in updateColor() }
-        .onChange(of: saturation) { _ in updateColor() }
-        .onChange(of: brightness) { _ in updateColor() }
+        .onChange(of: hue) { _ in    DispatchQueue.main.async {
+            updateColor()
+        } }
+        .onChange(of: saturation) { _ in    DispatchQueue.main.async {
+            updateColor()
+        } }
+        .onChange(of: brightness) { _ in    DispatchQueue.main.async {
+            updateColor()
+        } }
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 10)
