@@ -13,8 +13,10 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     static let shared = BLEManager()
 
     var scanTimer: Timer?
+    private var sendWorkItems: [DispatchWorkItem] = []
+    private var isSending = false
 
-    override init() {
+    override private init() {
         super.init()
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
         print("BLEManager 初始化")
@@ -75,7 +77,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
             if !peripherals.contains(where: { $0.peripheral == peripheral }) {
                 peripherals.append((peripheral, RSSI, localName))
-                print("将设备添加到列表: \(localName) 信号强度: \(RSSI)")
+               // print("将设备添加到列表: \(localName) 信号强度: \(RSSI)")
             } else {
                 if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
                     peripherals[index].rssi = RSSI
@@ -93,9 +95,9 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func connect(to peripheral: CBPeripheral) {
         if !connectedPeripherals.contains(peripheral) {
             centralManager.connect(peripheral, options: nil)
-            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-                print("尝试连接到外围设备: \(localName)")
-            }
+//            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
+//                print("尝试连接到外围设备: \(localName)")
+//            }
         }
     }
 
@@ -109,14 +111,15 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+
+//        if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
+//            print("外围设备断开连接: \(localName)")
+//        }
         if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
             peripherals.remove(at: index)
         }
         connectedPeripherals.remove(peripheral)
         characteristics.removeValue(forKey: peripheral)
-        if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-            print("外围设备断开连接: \(localName)")
-        }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
@@ -125,8 +128,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
                 print("发现外围设备的服务: \(localName)")
             }
             for service in services {
+                print("发现服务的特征值: \(service.uuid)")
                 if service.uuid == serviceUUID {
-                    print("发现服务的特征值: \(service.uuid)")
                     peripheral.discoverCharacteristics([characteristicUUID], for: service)
                 }
             }
@@ -173,26 +176,44 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
     }
 
+    
     func writeValueToAll(_ data: Data) {
-        for peripheral in connectedPeripherals {
-            if let characteristics = self.characteristics[peripheral] {
-                for characteristic in characteristics {
-                    if characteristic.uuid == characteristicUUID {
-                        writeValue(data, for: characteristic, on: peripheral)
-                    }
-                }
-            }
+        if connectedPeripherals.isEmpty{
+            return
         }
-    }
+         //isSending = true
+          let dispatchGroup = DispatchGroup()
+          let queue = DispatchQueue(label: "com.ble.writeQueue", attributes: .concurrent)
 
+          for peripheral in connectedPeripherals {
+              if let characteristics = self.characteristics[peripheral] {
+                  for characteristic in characteristics {
+                      if characteristic.uuid == characteristicUUID {
+                          let workItem = DispatchWorkItem {
+                              self.writeValue(data, for: characteristic, on: peripheral)
+                              dispatchGroup.leave()
+                          }
+                          sendWorkItems.append(workItem)
+                          dispatchGroup.enter()
+                          queue.async(execute: workItem)
+                      }
+                  }
+              }
+          }
+
+          dispatchGroup.notify(queue: .main) {
+             // self.isSending = false
+              print("所有数据写入完成")
+          }
+    }
+ 
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, on peripheral: CBPeripheral) {
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
-        if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-            print("写入数据到特征值: \(characteristic.uuid) 在外围设备: \(localName)")
-        }
+ 
     }
 
     func disconnectAll() {
+        stopSending()
         for peripheral in connectedPeripherals {
             centralManager.cancelPeripheralConnection(peripheral)
         }
@@ -202,6 +223,16 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         print("断开所有连接")
     }
     
+    func stopSending() {
+        isSending = false
+
+        for workItem in sendWorkItems {
+            workItem.cancel()
+        }
+        sendWorkItems.removeAll()
+        print("已停止所有发送任务")
+    }
+
     
     func sendColorAndSpeed(_ color:Color,_ isEnabled:Bool=true,_ isSpeedEnabled:Bool = false,speed:Double) {
         let colorData = ColorUtil.toRGBUInt8(color: color)

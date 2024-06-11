@@ -3,8 +3,7 @@ import CoreBluetooth
 
 struct ColorSelecterView: View {
     @State private var selectedView: Int = 0
-    @Binding var selectedColor: Color
-
+    @Binding var selectedColor: Color 
     var body: some View {
         VStack {
             Picker("View Selection", selection: $selectedView) {
@@ -28,9 +27,14 @@ struct ColorSelecterView: View {
     }
 }
 
+
+ 
+import SwiftUI
+
 struct ColorGridView: View {
-   // var onColorSelected: (Color) -> Void
     @Binding var selectedColor: Color
+    @State private var pressedColors: [Color: Bool] = [:]
+
     let colors: [[Color]] = {
         var colors = [[Color]]()
         for hue in stride(from: 0.1, to: 1.0, by: 0.1) {
@@ -40,26 +44,40 @@ struct ColorGridView: View {
             }
             colors.append(rowColors)
         }
-        let fksj =  [ColorUtil.argbToColor(argb: "#FF3F6C7D"),ColorUtil.argbToColor(argb: "#FF4AC9E3"),ColorUtil.argbToColor(argb: "#FF0092BD")];
-        colors.append(fksj)
-      
-    
+        let customColors = [
+            ColorUtil.argbToColor(argb: "#FF3F6C7D"),
+            ColorUtil.argbToColor(argb: "#FF4AC9E3"),
+            ColorUtil.argbToColor(argb: "#FF0092BD")
+        ]
+        colors.append(customColors)
         return colors
     }()
 
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                //Spacer().frame(height: 0) // 添加距离顶部的空间
                 VStack(spacing: 3) {
                     ForEach(0..<colors.count, id: \.self) { row in
                         HStack(spacing: 3) {
                             ForEach(0..<colors[row].count, id: \.self) { col in
-                                colors[row][col]
+                                let color = colors[row][col]
+                                color
+                                    .scaleEffect(pressedColors[color] == true ? 0.9 : 1.0)
+                                    .opacity(pressedColors[color] == true ? 0.7 : 1.0)
+                                    .animation(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.5), value: pressedColors[color])
                                     .onTapGesture {
-                                        selectedColor = colors[row][col]
+                                        selectedColor = color
+                                        generateHapticFeedback()
+                                        withAnimation {
+                                            pressedColors[color] = true
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                            withAnimation {
+                                                pressedColors[color] = false
+                                            }
+                                        }
                                     }
-                                    .frame(width: min(geometry.size.width / 10 , 35), height: min(geometry.size.height / 10 , 35)) // 自适应大小
+                                    .frame(width: min(geometry.size.width / 10, 35), height: min(geometry.size.height / 10, 35))
                                     .clipShape(Circle())
                             }
                         }
@@ -68,30 +86,43 @@ struct ColorGridView: View {
             }
         }
     }
+
+    private func generateHapticFeedback() {
+        #if os(iOS)
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        #elseif os(macOS)
+        let hapticManager = NSHapticFeedbackManager.defaultPerformer
+        hapticManager.perform(.alignment, performanceTime: .default)
+        #endif
+    }
 }
+ 
+
+
 
 struct ColorSlidersView: View {
     @Binding var selectedColor: Color
     @State private var hue: Double = 0.5
     @State private var saturation: Double = 0.5
     @State private var brightness: Double = 0.5
-
+    
     var body: some View {
         VStack(spacing: 20) {
             Slider(value: $hue, in: 0...1)
                 .accentColor(Color.init(hue: hue, saturation: saturation, brightness: brightness))
-                
+            
             Text("色相: \(hue, specifier: "%.2f")")
-
+            
             Slider(value: $saturation, in: 0...1)
                 .accentColor(Color.green).saturation(saturation)
             Text("饱和度: \(saturation, specifier: "%.2f")")
-
+            
             Slider(value: $brightness, in: 0...1)
                 .accentColor(.blue).brightness(brightness > 0.4 ? 0.4 : brightness)
             Text("亮度: \(brightness, specifier: "%.2f")")
             
-
+            
         }
         .onChange(of: hue) { _ in updateColor() }
         .onChange(of: saturation) { _ in updateColor() }
@@ -99,17 +130,18 @@ struct ColorSlidersView: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color.white)
+                .fill(Color.clear)
                 .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
         )
         .padding()
-
+        
     }
-
+    
     private func updateColor() {
         selectedColor = Color(hue: hue, saturation: saturation, brightness: brightness)
     }
 }
+
  
 
  

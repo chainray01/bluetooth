@@ -69,7 +69,7 @@ class ColorUtil{
         return commandData
     }
     
-    static func argbToColor(argb: String) ->   Color {
+    static func argbToColor(argb: String) -> Color {
                 // 清理字符串并转换为大写
                var cleanedArgbString = argb.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
                // 移除前缀 #

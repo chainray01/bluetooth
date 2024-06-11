@@ -2,12 +2,9 @@ import SwiftUI
 import CoreBluetooth
 
 struct FavoritesView: View {
-//    @State private var red: UInt8 = 0
-//    @State private var green: UInt8 = 211
-//    @State private var blue: UInt8 = 173
     @State private var isSpeedEnabled = false
     @State private var isEnabled = true
-    @State private var selectedColor = Color.orange
+    @State private var selectedColor = ColorUtil.argbToColor(argb: "#FF0092BD")
     @State private var selectedSpeed: Double = 10.0
     @ObservedObject var bleManager = BLEManager.shared
     
@@ -17,7 +14,7 @@ struct FavoritesView: View {
             HStack {
                 Toggle("启用", isOn: $isEnabled)
                     .onChange(of: isEnabled) { newValue in
-                        handleColorChange( selectedColor)
+                        handleEnable(isEnabled, selectedColor)
                     }
                     .padding(.horizontal)
                 
@@ -56,7 +53,13 @@ struct FavoritesView: View {
      //   bleManager.sendColorAndSpeed(selectColor, isEnabled,isSpeedEnabled,speed: selectedSpeed)
     }
 
-    func handleEnable(_ selectColor: Color) {
+    func handleEnable(_ bool: Bool,_ selectColor: Color) {
+        if bool{
+            bleManager.stopSending()
+        }
+        else{
+            bleManager.sendColorAndSpeed(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
+        }
       //  bleManager.sendColorAndSpeed(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
     }
 
