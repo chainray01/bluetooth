@@ -87,7 +87,14 @@ struct ColorSlidersView: View {
                 }
             }
             .padding(.top, 10)
+            
+            GeometryReader { geometry in
+                DeviceGroupView(selectedColor: $selectedColor )
+                    .frame(width: geometry.size.width - 40) // 自适应宽度并保持边距
+                    .padding(.horizontal, 20)
+            }
         }
+        
         .onChange(of: hue) { _ in    DispatchQueue.main.async {
             updateColor()
         } }
