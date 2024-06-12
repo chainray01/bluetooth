@@ -54,7 +54,7 @@ struct ColorSlidersView: View {
                             selectedColor = fksj
                             updateSliders(with: fksj)
                         }
-                    Text("疯狂世界")                             .font(.caption)
+                    Text("疯狂世界").font(.caption)
                        // .padding(5)
                         .background(Color.green.opacity(0.2))
                         .cornerRadius(5).foregroundColor(fksj)
@@ -67,7 +67,7 @@ struct ColorSlidersView: View {
                             selectedColor = aqws
                             updateSliders(with: aqws)
                         }
-                    Text("爱情万岁")                             .font(.caption)
+                    Text("爱情万岁").font(.caption)
                        // .padding(5)
                         .background(Color.green.opacity(0.2))
                         .cornerRadius(5).foregroundColor(aqws)
@@ -80,7 +80,7 @@ struct ColorSlidersView: View {
                             selectedColor = rshh
                             updateSliders(with: rshh)
                         }
-                    Text("人生海海")                             .font(.caption)
+                    Text("人生海海")  .font(.caption)
                        // .padding(5)
                         .background(Color.green.opacity(0.2))
                         .cornerRadius(5).foregroundColor(rshh)

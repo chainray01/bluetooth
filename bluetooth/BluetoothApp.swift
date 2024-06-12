@@ -9,7 +9,7 @@ import SwiftUI
 
 
 @main
-struct bluetoothApp: App {
+struct BluetoothApp: App {
       
     var body: some Scene {
         WindowGroup {
