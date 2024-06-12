@@ -7,8 +7,7 @@
 
 import Foundation
 import SwiftUI
-class ColorUtil{
-    
+class ColorUtil{ 
     //颜色转rbg分量
     static func toRGBUInt8(color:Color) -> (red: UInt8, green: UInt8, blue: UInt8) {
         let components =  color.cgColor?.components
@@ -91,6 +90,28 @@ class ColorUtil{
     
     
     
+    /// 构建灯光数据
+    /// - Parameters:
+    ///   - color: 颜色
+    ///   - isEnabled: 是否启用
+    ///   - isSpeedEnabled: 启用速度
+    ///   - speed: 速度
+    /// - Returns: data
+    static func buildLightData(_ color:Color,_ isEnabled:Bool=true,_ isSpeedEnabled:Bool = false,speed:Double) -> Data  {
+        let colorData =  toRGBUInt8(color: color)
+        return  ColorUtil.buildColorData(
+            red: colorData.red,
+            green: colorData.green,
+            blue: colorData.blue,
+            isEnabled: isEnabled,
+            isSpeedEnabled: isSpeedEnabled,
+            speed: speed
+        )
+    }
+    
+    static func buildTurnOff() -> Data {
+      return  buildLightData(ColorUtil.argbToColor(argb: "#FF0092BD"),false,false, speed: 10)
+    }
   
 }
 

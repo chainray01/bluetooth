@@ -11,7 +11,7 @@ import SwiftUI
 @main
 struct BluetoothApp: App {
     @Environment(\.scenePhase) private var scenePhase
-    @ObservedObject var bleManager = BLEManager.shared
+   
     var body: some Scene {
         WindowGroup {
             ContentView()

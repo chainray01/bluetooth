@@ -9,14 +9,16 @@ import SwiftUI
 import CoreBluetooth
 
 struct ContentView: View {
+    @ObservedObject var bleManager = BLEManager.shared
     var body: some View {
         TabView{
             DiscoverView().tabItem {
-                Label("discover", systemImage: "list.bullet")
+                let cnt = bleManager.connectedPeripherals.count
+                Label("discover(\( cnt >  0 ?cnt : 0))", systemImage: "list.bullet")
             }
-//            ColorSelecterView( ).tabItem {
-//                Label("device", systemImage: "list.bullet")
-//            }
+            DeviceView( ).tabItem {
+                Label("device", systemImage: "list.bullet")
+            }
             FavoritesView( )
                 .tabItem {
                     Label("Favorites", systemImage: "star")

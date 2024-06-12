@@ -3,7 +3,7 @@ import CoreBluetooth
 import SwiftUI
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     @Published var isScanning = false // 是否正在扫描
-    @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String?)] = [] // 发现的外围设备
+    @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String?, groupTag: String?)] = [] // 发现的外围设备
     @Published var connectedPeripherals: Set<CBPeripheral> = [] // 已连接的外围设备
     @Published var characteristics: [CBPeripheral: [CBCharacteristic]] = [:] // 每个外围设备的特征值
 
@@ -76,7 +76,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
             if !peripherals.contains(where: { $0.peripheral == peripheral }) {
-                peripherals.append((peripheral, RSSI, localName))
+                peripherals.append((peripheral, RSSI, localName,nil))
                // print("将设备添加到列表: \(localName) 信号强度: \(RSSI)")
             } else {
                 if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
@@ -214,7 +214,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
 
     func disconnectAll() {
        // stopSending()
-        sendColorAndSpeed(ColorUtil.argbToColor(argb: "#FF0092BD"),false,false, speed: 10)
+        let data = ColorUtil.buildTurnOff()
+        writeValueToAll(data)
         for peripheral in connectedPeripherals {
             centralManager.cancelPeripheralConnection(peripheral)
         }
@@ -234,33 +235,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         print("已停止所有发送任务")
     }
 
-    
-    func sendColorAndSpeed(_ color:Color,_ isEnabled:Bool=true,_ isSpeedEnabled:Bool = false,speed:Double) {
-        let colorData = ColorUtil.toRGBUInt8(color: color)
-        let data = ColorUtil.buildColorData(
-            red: colorData.red,
-            green: colorData.green,
-            blue: colorData.blue,
-            isEnabled: isEnabled,
-            isSpeedEnabled: isSpeedEnabled,
-            speed: speed
-        )
-        writeValueToAll(data)
-    }
-    
-    func sendColorIntAndSpeed(_ red:UInt8,_ green:UInt8,_ blue:UInt8,_ isEnabled:Bool=true,_ isSpeedEnabled:Bool = false,speed:Double) {
-        let data = ColorUtil.buildColorData(
-            red: red,
-            green: green,
-            blue: blue,
-            isEnabled: isEnabled,
-            isSpeedEnabled: isSpeedEnabled,
-            speed: speed
-        )
-        writeValueToAll(data)
-    }
-    
-    
+  
     func toggleScanning() {
         isScanning ? 
         stopScanning() :

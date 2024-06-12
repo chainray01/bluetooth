@@ -2,7 +2,7 @@
 //
 //  DiscoverView.swift
 //  bluetooth
-//
+// 扫描列表
 //  Created by Ray chai on 2024/5/28.
 //
 
@@ -21,7 +21,7 @@ struct DiscoverView: View {
                 Button(action: {
                     bleManager.toggleScanning()
                 }) {
-                    Text(bleManager.isScanning ? "扫描[\(bleManager.connectedPeripherals.count)]" : "已暂停")
+                    Text(bleManager.isScanning ? "扫描" : "已暂停")
                         .padding(.trailing)
                 }
                 Button(action: {

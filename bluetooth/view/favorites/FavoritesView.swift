@@ -40,7 +40,7 @@ struct FavoritesView: View {
                     }
                 }
                 Text("速度\(selectedSpeed, specifier: "%.0f")")}
-            .padding(.bottom,0).padding(.top,5)
+            .padding(.bottom,0).padding(.top,10)
             ColorSelecterView(selectedColor: $selectedColor).padding(.bottom,2)
         }.onChange(of: selectedColor) { newColor in
            handleColorChange(selectedColor)
@@ -55,7 +55,8 @@ struct FavoritesView: View {
 //        red = data.red
 //        green = data.green
 //        blue = data.blue
-        bleManager.sendColorAndSpeed(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
+        let data = ColorUtil.buildLightData(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
+        bleManager.writeValueToAll(data)
        // bleManager.sendColorAndSpeed(selectColor, speed: selectedSpeed)
     }
     func handleFlashing(_ selectColor: Color) {
@@ -63,12 +64,8 @@ struct FavoritesView: View {
     }
 
     func handleEnable(_ bool: Bool,_ selectColor: Color) {
-        if !bool{
-            bleManager.stopSending()
-        }
-        bleManager.sendColorAndSpeed(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
-         
-    
+        let data =  ColorUtil.buildLightData(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
+        bleManager.writeValueToAll(data)
     }
 
 }

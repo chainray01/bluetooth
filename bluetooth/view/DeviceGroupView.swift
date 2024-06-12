@@ -41,12 +41,6 @@ struct DeviceGroupView: View {
                     }
                 }
             }
-
-            if let selectedDevice = selectedDevice {
-                Text("已选择设备: \(selectedDevice.name ?? "设备")")
-                    .foregroundColor(.blue)
-            }
-
             Spacer()
         }
         .sheet(isPresented: $showDevicePicker) {
