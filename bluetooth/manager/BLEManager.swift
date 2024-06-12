@@ -225,6 +225,24 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         print("断开所有连接")
     }
     
+    func disconnect(peripheral:CBPeripheral){
+        
+        let data = ColorUtil.buildTurnOff()
+        if let characteristics = self.characteristics[peripheral] {
+            for characteristic in characteristics {
+                if characteristic.uuid == characteristicUUID {
+                    peripheral.writeValue(data, for: characteristic, type: .withResponse)
+                }
+            }
+        }
+        centralManager.cancelPeripheralConnection(peripheral)
+        connectedPeripherals.remove(peripheral)
+        if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
+            peripherals.remove(at: index)
+        }
+        characteristics.removeValue(forKey: peripheral)
+    }
+    
     func stopSending() {
         isSending = false
 

@@ -19,7 +19,7 @@ struct DeviceView: View {
                     .font(.largeTitle)
                     .padding(.leading)
                 Spacer()
-                Button(isBatchModeActive ? "取消" : "设置分组") {
+                Button(isBatchModeActive ? "取消" : "批量设置分组") {
                     withAnimation {
                         isBatchModeActive.toggle()
                     }
@@ -31,11 +31,11 @@ struct DeviceView: View {
             }
             .padding(.top)
             
-            if isBatchModeActive  {
+            if isBatchModeActive {
                 HStack {
                     Spacer()
                     ForEach(["A", "B", "C", "D"], id: \.self) { tag in
-                        Button("\(tag)") {
+                        Button("设置为 \(tag)") {
                             withAnimation {
                                 for id in selectedPeripherals {
                                     if let index = bleManager.peripherals.firstIndex(where: { $0.peripheral.identifier == id }) {
@@ -94,6 +94,9 @@ struct DeviceView: View {
                                 .padding(3)
                                 .background(Color.green.opacity(0.2))
                                 .cornerRadius(3)
+                                .onTapGesture {
+                                    bleManager.disconnect(peripheral: peripheral)
+                                }
                             Menu {
                                 ForEach(["A", "B", "C", "D"], id: \.self) { tag in
                                     Button(action: {
