@@ -21,9 +21,19 @@ struct DiscoverView: View {
                 Button(action: {
                     bleManager.toggleScanning()
                 }) {
-                    Text(bleManager.isScanning ? "正在扫描:\(bleManager.connectedPeripherals.count)" : "已暂停")
+                    Text(bleManager.isScanning ? "扫描[\(bleManager.connectedPeripherals.count)]" : "已暂停")
                         .padding(.trailing)
                 }
+                Button(action: {
+                    if bleManager.connectedPeripherals.count>0{
+                        bleManager.toggleScanning()
+                        bleManager.disconnectAll()
+                    }
+                }) {
+                    Text("断开连接")
+                        .foregroundColor(bleManager.connectedPeripherals.count>0 ? .blue : .gray)
+                        .padding(.trailing)
+                } .disabled(bleManager.connectedPeripherals.count == 0)
             }
             .padding(.top)
 

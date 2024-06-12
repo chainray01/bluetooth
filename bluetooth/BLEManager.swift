@@ -18,7 +18,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
 
     override private init() {
         super.init()
-        self.centralManager = CBCentralManager(delegate: self, queue: nil)
+        centralManager = CBCentralManager(delegate: self, queue: nil, options: [CBCentralManagerOptionShowPowerAlertKey: true])
         print("BLEManager 初始化")
     }
 
@@ -181,7 +181,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         if connectedPeripherals.isEmpty{
             return
         }
-         //isSending = true
+         isSending = true
           let dispatchGroup = DispatchGroup()
           let queue = DispatchQueue(label: "com.ble.writeQueue", attributes: .concurrent)
 
@@ -202,8 +202,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
           }
 
           dispatchGroup.notify(queue: .main) {
-             // self.isSending = false
-            //  print("所有数据写入完成")
+              self.isSending = false
+              print("所有数据写入完成")
           }
     }
  
@@ -213,7 +213,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     func disconnectAll() {
-        stopSending()
+       // stopSending()
+        sendColorAndSpeed(ColorUtil.argbToColor(argb: "#FF0092BD"),false,false, speed: 10)
         for peripheral in connectedPeripherals {
             centralManager.cancelPeripheralConnection(peripheral)
         }

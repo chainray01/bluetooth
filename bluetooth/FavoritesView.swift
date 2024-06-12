@@ -63,12 +63,11 @@ struct FavoritesView: View {
     }
 
     func handleEnable(_ bool: Bool,_ selectColor: Color) {
-        if bool{
+        if !bool{
             bleManager.stopSending()
         }
-        else{
-            bleManager.sendColorAndSpeed(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
-        }
+        bleManager.sendColorAndSpeed(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
+         
     
     }
 

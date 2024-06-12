@@ -29,7 +29,7 @@ struct ColorSelecterView: View {
                             .padding() // 增加内边距避免内容贴边
                     } else {
                         ColorSlidersView(selectedColor: $selectedColor)
-                           // .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
+                            //.frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
                             .padding() // 增加内边距避免内容贴边
                     }
                 }

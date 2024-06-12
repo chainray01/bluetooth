@@ -12,6 +12,7 @@
 		901F592C2C05CF3600CCD859 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 901F592B2C05CF3600CCD859 /* Assets.xcassets */; };
 		901F592F2C05CF3600CCD859 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 901F592E2C05CF3600CCD859 /* Preview Assets.xcassets */; };
 		902308EC2C158B9C004A6373 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902308EB2C158B9C004A6373 /* DiscoverView.swift */; };
+		9036BA7E2C197CE8007230E8 /* DeviceGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9036BA7D2C197CE8007230E8 /* DeviceGroupView.swift */; };
 		90492FCC2C143D2C00DB074C /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCB2C143D2C00DB074C /* FavoritesView.swift */; };
 		90492FCE2C143ED800DB074C /* ColorSelecterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCD2C143ED800DB074C /* ColorSelecterView.swift */; };
 		90492FD02C14409700DB074C /* ColorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90492FCF2C14409700DB074C /* ColorUtil.swift */; };
@@ -41,6 +42,7 @@
 		901F592B2C05CF3600CCD859 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		901F592E2C05CF3600CCD859 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		902308EB2C158B9C004A6373 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
+		9036BA7D2C197CE8007230E8 /* DeviceGroupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceGroupView.swift; sourceTree = "<group>"; };
 		90492FCB2C143D2C00DB074C /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		90492FCD2C143ED800DB074C /* ColorSelecterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSelecterView.swift; sourceTree = "<group>"; };
 		90492FCF2C14409700DB074C /* ColorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorUtil.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 				90BF1DB32C1896D00097BA82 /* ColorSlidersView.swift */,
 				90BF1DB52C1897BA0097BA82 /* ColorGridView.swift */,
 				9075576C2C193F0400533D3C /* LightDataService.swift */,
+				9036BA7D2C197CE8007230E8 /* DeviceGroupView.swift */,
 			);
 			path = bluetooth;
 			sourceTree = "<group>";
@@ -195,6 +198,7 @@
 				90999DD62C11FA6800644AFC /* BLEManager.swift in Sources */,
 				90492FD02C14409700DB074C /* ColorUtil.swift in Sources */,
 				902308EC2C158B9C004A6373 /* DiscoverView.swift in Sources */,
+				9036BA7E2C197CE8007230E8 /* DeviceGroupView.swift in Sources */,
 				90492FCE2C143ED800DB074C /* ColorSelecterView.swift in Sources */,
 				901F59282C05CF3600CCD859 /* BluetoothApp.swift in Sources */,
 			);

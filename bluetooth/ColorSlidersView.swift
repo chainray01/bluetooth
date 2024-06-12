@@ -16,27 +16,30 @@ struct ColorSlidersView: View {
 
     var body: some View {
         VStack(spacing: 5) {
-            Slider(value: $hue, in: 0...1)
-                .accentColor(Color(hue: hue, saturation: saturation, brightness: brightness))
-            Text("色相: \(hue, specifier: "%.2f")").foregroundStyle(Color.blue)
-
-            Slider(value: $saturation, in: 0...1)
-                .accentColor(Color.green).saturation(saturation)
-            Text("饱和度: \(saturation, specifier: "%.2f")").foregroundStyle(Color.blue)
-
-            Slider(value: $brightness, in: 0...1)
-                .accentColor(.blue).brightness(brightness > 0.4 ? 0.4 : brightness)
-            Text("亮度: \(brightness, specifier: "%.2f")").foregroundStyle(Color.blue)
-
+            HStack{
+                Slider(value: $hue, in: 0...1)
+                    .accentColor(Color(hue: hue, saturation: saturation, brightness: brightness))
+                Text("H: \(hue, specifier: "%.2f")").foregroundStyle(Color.blue)
+            }
+            HStack{
+                Slider(value: $saturation, in: 0...1)
+                    .accentColor(Color.green).saturation(saturation)
+                Text("S: \(saturation, specifier: "%.2f")").foregroundStyle(Color.blue)
+            }
+            HStack{
+                Slider(value: $brightness, in: 0...1)
+                    .accentColor(.blue).brightness(brightness > 0.4 ? 0.4 : brightness)
+                Text("L: \(brightness, specifier: "%.2f")").foregroundStyle(Color.blue)
+            }
             let fksj = ColorUtil.argbToColor(argb: "#FF3F6C7D")
             let aqws = ColorUtil.argbToColor(argb: "#FF4AC9E3")
             let rshh = ColorUtil.argbToColor(argb: "#FF0092BD")
 
-            HStack(spacing: 10) {
+            HStack(spacing: 20) {
                 VStack {
                     Circle()
                         .fill(selectedColor)
-                        .frame(width: 45, height: 45)
+                        .frame(width: 50, height: 50)
                         .onTapGesture {
                             selectedColor = selectedColor
                             updateSliders(with: selectedColor)
@@ -49,7 +52,7 @@ struct ColorSlidersView: View {
                 VStack {
                     Circle()
                         .fill(fksj)
-                        .frame(width: 45, height: 45)
+                        .frame(width: 50, height: 50)
                         .onTapGesture {
                             selectedColor = fksj
                             updateSliders(with: fksj)
@@ -62,7 +65,7 @@ struct ColorSlidersView: View {
                 VStack {
                     Circle()
                         .fill(aqws)
-                        .frame(width: 45, height: 45)
+                        .frame(width: 50, height: 50)
                         .onTapGesture {
                             selectedColor = aqws
                             updateSliders(with: aqws)
@@ -75,7 +78,7 @@ struct ColorSlidersView: View {
                 VStack {
                     Circle()
                         .fill(rshh)
-                        .frame(width: 45, height: 45)
+                        .frame(width: 50, height: 50)
                         .onTapGesture {
                             selectedColor = rshh
                             updateSliders(with: rshh)
@@ -90,8 +93,9 @@ struct ColorSlidersView: View {
             
             GeometryReader { geometry in
                 DeviceGroupView(selectedColor: $selectedColor )
-                    .frame(width: geometry.size.width - 40) // 自适应宽度并保持边距
-                    .padding(.horizontal, 20)
+                    .frame(width: geometry.size.width) // 自适应宽度并保持边距
+                    //.padding(.horizontal, 20)
+                   
             }
         }
         
@@ -104,13 +108,13 @@ struct ColorSlidersView: View {
         .onChange(of: brightness) { _ in    DispatchQueue.main.async {
             updateColor()
         } }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.white)
-                .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
-        )
-        .padding()
+      //  .padding()
+//        .background(
+//            RoundedRectangle(cornerRadius: 10)
+//                .fill(Color.white)
+//                .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
+//        )
+       // .padding()
     }
 
     /// 更新选定颜色
