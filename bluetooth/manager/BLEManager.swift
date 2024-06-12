@@ -1,120 +1,89 @@
 import Foundation
 import CoreBluetooth
 import SwiftUI
+
 class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
-    @Published var isScanning = false // 是否正在扫描
-    @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String?, groupTag: String?)] = [] // 发现的外围设备
-    @Published var connectedPeripherals: Set<CBPeripheral> = [] // 已连接的外围设备
-    @Published var characteristics: [CBPeripheral: [CBCharacteristic]] = [:] // 每个外围设备的特征值
+    @Published var isScanning = false
+    @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String?, groupTag: String?)] = []
+    @Published var connectedPeripherals: Set<CBPeripheral> = []
+    @Published var characteristics: [CBPeripheral: [CBCharacteristic]] = [:]
 
     let serviceUUID = CBUUID(string: "00007610-0000-1000-8000-00805F9B34FB")
     let characteristicUUID = CBUUID(string: "00007613-0000-1000-8000-00805F9B34FB")
     var centralManager: CBCentralManager!
     static let shared = BLEManager()
 
-    var scanTimer: Timer?
+    private var scanTimer: Timer?
     private var sendWorkItems: [DispatchWorkItem] = []
     private var isSending = false
 
     override private init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil, options: [CBCentralManagerOptionShowPowerAlertKey: true])
-        print("BLEManager 初始化")
+        print("BLEManager initialized")
     }
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
-            print("蓝牙已开启")
+            print("Bluetooth is powered on")
             startScanning()
-        case .poweredOff:
-            print("蓝牙已关闭")
-            stopScanning()
-            stopTimer()
-        case .resetting:
-            print("蓝牙正在重置")
-            stopScanning()
-            stopTimer()
-        case .unauthorized:
-            print("蓝牙未授权")
-            stopScanning()
-            stopTimer()
-        case .unsupported:
-            print("蓝牙不支持")
-            stopScanning()
-            stopTimer()
-        case .unknown:
-            print("蓝牙状态未知")
-            stopScanning()
-            stopTimer()
+        case .poweredOff, .resetting, .unauthorized, .unsupported, .unknown:
+            print("Bluetooth is \(central.state)")
+            stopScanningAndTimer()
         @unknown default:
-            stopScanning()
-            stopTimer()
+            stopScanningAndTimer()
             fatalError()
         }
     }
 
     func startScanning() {
-        if centralManager.state == .poweredOn {
-            isScanning = true
-            scanTimer?.invalidate()
-            startTimer()
-            print("开始扫描外围设备")
-        } else {
-            print("中央管理器未开启，当前状态: \(centralManager.state.rawValue)")
+        guard centralManager.state == .poweredOn else {
+            print("Central manager is not powered on, current state: \(centralManager.state.rawValue)")
+            return
         }
+        isScanning = true
+        startTimer()
+        print("Started scanning for peripherals")
     }
 
     func stopScanning() {
-        if isScanning {
-            isScanning = false
-            centralManager.stopScan()
-            stopTimer()
-         }
+        guard isScanning else { return }
+        isScanning = false
+        centralManager.stopScan()
+        stopTimer()
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
-        if let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
-            if !peripherals.contains(where: { $0.peripheral == peripheral }) {
-                peripherals.append((peripheral, RSSI, localName,nil))
-               // print("将设备添加到列表: \(localName) 信号强度: \(RSSI)")
-            } else {
-                if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
-                    peripherals[index].rssi = RSSI
-                    peripherals[index].localName = localName
-                  //  print("更新设备信号强度: \(localName) 信号强度: \(RSSI)")
-                }
-            }
-            peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
-            if localName.hasPrefix("MD") || peripheral.name == "MD000000000000" {
-                connect(to: peripheral)
-            }
+        guard let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String else { return }
+        
+        if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
+            peripherals[index].rssi = RSSI
+            peripherals[index].localName = localName
+        } else {
+            peripherals.append((peripheral, RSSI, localName, nil))
+        }
+        
+        peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
+        
+        if localName.hasPrefix("MD") || peripheral.name == "MD000000000000" {
+            connect(to: peripheral)
         }
     }
 
     func connect(to peripheral: CBPeripheral) {
-        if !connectedPeripherals.contains(peripheral) {
-            centralManager.connect(peripheral, options: nil)
-//            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-//                print("尝试连接到外围设备: \(localName)")
-//            }
-        }
+        guard !connectedPeripherals.contains(peripheral) else { return }
+        centralManager.connect(peripheral, options: nil)
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         connectedPeripherals.insert(peripheral)
-        if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-            print("已连接到外围设备: \(localName)")
-        }
         peripheral.delegate = self
         peripheral.discoverServices([serviceUUID])
+        print("Connected to peripheral: \(peripheral.identifier)")
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-
-//        if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-//            print("外围设备断开连接: \(localName)")
-//        }
         if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
             peripherals.remove(at: index)
         }
@@ -123,97 +92,77 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        if let services = peripheral.services {
-            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-                print("发现外围设备的服务: \(localName)")
-            }
-            for service in services {
-                print("发现服务的特征值: \(service.uuid)")
-                if service.uuid == serviceUUID {
-                    peripheral.discoverCharacteristics([characteristicUUID], for: service)
-                }
-            }
-        } else {
-            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-                print("发现服务失败: \(localName), 错误: \(error?.localizedDescription ?? "未知错误")")
+        guard let services = peripheral.services else {
+            print("Failed to discover services for peripheral: \(peripheral.identifier), error: \(error?.localizedDescription ?? "unknown error")")
+            return
+        }
+        
+        for service in services {
+            if service.uuid == serviceUUID {
+                peripheral.discoverCharacteristics([characteristicUUID], for: service)
             }
         }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        if let characteristics = service.characteristics {
-            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-                print("发现服务的特征值: \(service.uuid) 在外围设备: \(localName)")
+        guard let characteristics = service.characteristics else {
+            print("Failed to discover characteristics for service: \(service.uuid), error: \(error?.localizedDescription ?? "unknown error")")
+            return
+        }
+        
+        self.characteristics[peripheral, default: []].append(contentsOf: characteristics)
+        
+        for characteristic in characteristics {
+            if characteristic.properties.contains(.read) {
+                peripheral.readValue(for: characteristic)
             }
-            self.characteristics[peripheral, default: []].append(contentsOf: characteristics)
-            for characteristic in characteristics {
-                print("发现特征值: \(characteristic.uuid)")
-                if characteristic.properties.contains(.read) {
-                    peripheral.readValue(for: characteristic)
-                    print("读取特征值: \(characteristic.uuid)")
-                }
-                if characteristic.properties.contains(.notify) {
-                    peripheral.setNotifyValue(true, for: characteristic)
-                    print("设置特征值通知: \(characteristic.uuid)")
-                }
-            }
-        } else {
-            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-                print("发现特征值失败: \(service.uuid) 在外围设备: \(localName), 错误: \(error?.localizedDescription ?? "未知错误")")
+            if characteristic.properties.contains(.notify) {
+                peripheral.setNotifyValue(true, for: characteristic)
             }
         }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if let data = characteristic.value {
-            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-                print("收到数据来自 \(localName), uuid: \(characteristic.uuid), data: \(data)")
-            }
-        } else {
-            if let localName = peripherals.first(where: { $0.peripheral == peripheral })?.localName {
-                print("读取特征值失败: \(characteristic.uuid) 在外围设备: \(localName), 错误: \(error?.localizedDescription ?? "未知错误")")
-            }
-        }
-    }
-
-    
-    func writeValueToAll(_ data: Data) {
-        if connectedPeripherals.isEmpty{
+        guard let data = characteristic.value else {
+            print("Failed to read value for characteristic: \(characteristic.uuid), error: \(error?.localizedDescription ?? "unknown error")")
             return
         }
-         isSending = true
-          let dispatchGroup = DispatchGroup()
-          let queue = DispatchQueue(label: "com.ble.writeQueue", attributes: .concurrent)
-
-          for peripheral in connectedPeripherals {
-              if let characteristics = self.characteristics[peripheral] {
-                  for characteristic in characteristics {
-                      if characteristic.uuid == characteristicUUID {
-                          let workItem = DispatchWorkItem {
-                              self.writeValue(data, for: characteristic, on: peripheral)
-                              dispatchGroup.leave()
-                          }
-                          sendWorkItems.append(workItem)
-                          dispatchGroup.enter()
-                          queue.async(execute: workItem)
-                      }
-                  }
-              }
-          }
-
-          dispatchGroup.notify(queue: .main) {
-              self.isSending = false
-              print("所有数据写入完成")
-          }
+        print("Received data from peripheral: \(peripheral.identifier), characteristic: \(characteristic.uuid), data: \(data)")
     }
- 
+
+    func writeValueToAll(_ data: Data) {
+        guard !connectedPeripherals.isEmpty else { return }
+
+        isSending = true
+        let dispatchGroup = DispatchGroup()
+        let queue = DispatchQueue(label: "com.ble.writeQueue", attributes: .concurrent)
+
+        for peripheral in connectedPeripherals {
+            if let characteristics = self.characteristics[peripheral] {
+                for characteristic in characteristics where characteristic.uuid == characteristicUUID {
+                    let workItem = DispatchWorkItem {
+                        self.writeValue(data, for: characteristic, on: peripheral)
+                        dispatchGroup.leave()
+                    }
+                    sendWorkItems.append(workItem)
+                    dispatchGroup.enter()
+                    queue.async(execute: workItem)
+                }
+            }
+        }
+
+        dispatchGroup.notify(queue: .main) {
+            self.isSending = false
+            print("All data written successfully")
+        }
+    }
+
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, on peripheral: CBPeripheral) {
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
- 
     }
 
     func disconnectAll() {
-       // stopSending()
+        stopSending()
         let data = ColorUtil.buildTurnOff()
         writeValueToAll(data)
         for peripheral in connectedPeripherals {
@@ -222,17 +171,14 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         connectedPeripherals.removeAll()
         peripherals.removeAll()
         characteristics.removeAll()
-        print("断开所有连接")
+        print("Disconnected all peripherals")
     }
     
-    func disconnect(peripheral:CBPeripheral){
-        
+    func disconnect(peripheral: CBPeripheral) {
         let data = ColorUtil.buildTurnOff()
         if let characteristics = self.characteristics[peripheral] {
-            for characteristic in characteristics {
-                if characteristic.uuid == characteristicUUID {
-                    peripheral.writeValue(data, for: characteristic, type: .withResponse)
-                }
+            for characteristic in characteristics where characteristic.uuid == characteristicUUID {
+                peripheral.writeValue(data, for: characteristic, type: .withResponse)
             }
         }
         centralManager.cancelPeripheralConnection(peripheral)
@@ -245,24 +191,23 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     
     func stopSending() {
         isSending = false
-
         for workItem in sendWorkItems {
             workItem.cancel()
         }
         sendWorkItems.removeAll()
-        print("已停止所有发送任务")
+        print("Stopped all sending tasks")
     }
 
-  
     func toggleScanning() {
-        isScanning ? 
-        stopScanning() :
-        {
-            characteristics = characteristics.filter { connectedPeripherals.contains($0.key) }
-            startScanning()
-        }()
+        isScanning ? stopScanning() : startScanning()
     }
-    func stopTimer() {
+
+    private func stopScanningAndTimer() {
+        stopScanning()
+        stopTimer()
+    }
+
+    private func stopTimer() {
         scanTimer?.invalidate()
         scanTimer = nil
     }
@@ -273,4 +218,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         }
     }
+
+  
 }
