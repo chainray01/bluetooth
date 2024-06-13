@@ -13,28 +13,34 @@ struct FavoritesView: View {
     @State private var isEnabled = true
     @State private var selectedColor = ColorUtil.argbToColor(argb: "#FF0092BD")
     @State private var selectedSpeed: Double = 10.0
+    @State private var isGroupEnabled = false
     @ObservedObject var bleManager = BLEManager.shared
     
     
     var body: some View {
         VStack(spacing: 5) {  // 减少 VStack 的 spacing
-            HStack {
-                Toggle("启用", isOn: $isEnabled)
-                    .onChange(of: isEnabled) { newValue in
-                        handleEnable(isEnabled, selectedColor)
-                    }
-                    .padding(.horizontal)
-                
-                Toggle("闪灯", isOn: $isSpeedEnabled)
-                    .onChange(of: isSpeedEnabled) { newValue in
-                        handleColorChange(selectedColor)
-                    }
-                    .padding(.horizontal)
-            }
-            .padding(.top, 5) // 增加一点顶部填充
+            HStack(spacing: 20) {
+                  Toggle("启用", isOn: $isEnabled)
+                      .onChange(of: isEnabled) { newValue in
+                          handleEnable(isEnabled, selectedColor)
+                      }
+                  
+                  Toggle("闪灯", isOn: $isSpeedEnabled)
+                      .onChange(of: isSpeedEnabled) { newValue in
+                          handleColorChange(selectedColor)
+                      }
+                  
+                  Toggle("分组", isOn: $isGroupEnabled) // Adjusted based on your requirement
+                      .onChange(of: isGroupEnabled) { newValue in
+                          handleColorChange(selectedColor)
+                      }
+              }
+              .padding(.horizontal)
+              .padding(.top, 5) // 增加一点顶部填充
         
                 HStack{
                     Slider(value:  $selectedSpeed, in: 0...15,step: 1)
+                        .accentColor(Color.blue).saturation(selectedSpeed/16)
                         .disabled(!isSpeedEnabled) // 根据 isSpeedEnabled 控制 Slider 的可用状态
                         .onChange(of: selectedSpeed)
                     { newColor in
@@ -44,7 +50,7 @@ struct FavoritesView: View {
                     }
                     Text("速度\(selectedSpeed, specifier: "%.0f")")}
                 .padding(.top,10)
-            ColorSelecterView(selectedColor: $selectedColor).padding(.bottom,2)
+            ColorSelecterView(selectedColor: $selectedColor,isGroupEnabled:  $isGroupEnabled)
         }.onChange(of: selectedColor) { newColor in
            handleColorChange(selectedColor)
         }
@@ -54,17 +60,12 @@ struct FavoritesView: View {
 
 
     func handleColorChange(_ selectColor: Color) {
-    //  let data =  ColorUtil.toRGBUInt8(color: selectColor)
-//        red = data.red
-//        green = data.green
-//        blue = data.blue
+ 
         let data = ColorUtil.buildLightData(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
         bleManager.writeValueToAll(data)
-       // bleManager.sendColorAndSpeed(selectColor, speed: selectedSpeed)
     }
     func handleFlashing(_ selectColor: Color) {
-     //   bleManager.sendColorAndSpeed(selectColor, isEnabled,isSpeedEnabled,speed: selectedSpeed)
-    }
+      }
 
     func handleEnable(_ bool: Bool,_ selectColor: Color) {
         bleManager.stopSending()

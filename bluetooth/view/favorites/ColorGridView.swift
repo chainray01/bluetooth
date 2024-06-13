@@ -25,10 +25,11 @@ struct ColorGridView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            VStack {
+      
+              
                 VStack(spacing: 3) {
                     ForEach(0..<colors.count, id: \.self) { row in
-                        HStack(spacing: 3.5) {
+                        HStack(spacing: 3) {
                             ForEach(0..<colors[row].count, id: \.self) { col in
                                 let color = colors[row][col]
                                 color
@@ -47,13 +48,15 @@ struct ColorGridView: View {
                                             }
                                         }
                                     }
-                                    .frame(width: min(geometry.size.width / 10, 35), height: min(geometry.size.height / 5, 35))
-                                    .clipShape(Circle())
+                                     .clipShape(Circle())
                             }
                         }
                     }
                 }
-            }
+              
+             
+        .padding(.horizontal)
+      
         }
     }
 

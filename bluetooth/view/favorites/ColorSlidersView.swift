@@ -15,108 +15,97 @@ struct ColorSlidersView: View {
     @State private var brightness: Double = 0.5
 
     var body: some View {
-        VStack(spacing: 5) {
-            HStack{
-                Slider(value: $hue, in: 0...1)
-                    .accentColor(Color(hue: hue, saturation: saturation, brightness: brightness))
-                Text("H: \(hue, specifier: "%.2f")").foregroundStyle(Color.blue)
-            }
-            HStack{
-                Slider(value: $saturation, in: 0...1)
-                    .accentColor(Color.green).saturation(saturation)
-                Text("S: \(saturation, specifier: "%.2f")").foregroundStyle(Color.blue)
-            }
-            HStack{
-                Slider(value: $brightness, in: 0...1)
-                    .accentColor(.blue).brightness(brightness > 0.4 ? 0.4 : brightness)
-                Text("L: \(brightness, specifier: "%.2f")").foregroundStyle(Color.blue)
-            }
-            let fksj = ColorUtil.argbToColor(argb: "#FF3F6C7D")
-            let aqws = ColorUtil.argbToColor(argb: "#FF4AC9E3")
-            let rshh = ColorUtil.argbToColor(argb: "#FF0092BD")
-
-            HStack(spacing: 20) {
-                VStack {
-                    Circle()
-                        .fill(selectedColor)
-                        .frame(width: 50, height: 50)
-                        .onTapGesture {
-                            selectedColor = selectedColor
-                            updateSliders(with: selectedColor)
-                        }
-                    Text("HSL颜色").font(.caption)
-                       // .padding(5)
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(5).foregroundColor(fksj)
+        GeometryReader { geometry in
+            VStack(spacing: 20) {
+                HStack{
+                    Slider(value: $hue, in: 0...1)
+                        .accentColor(Color(hue: hue, saturation: saturation, brightness: brightness))
+                    Text("H: \(hue, specifier: "%.2f")").foregroundStyle(Color.blue)
                 }
-                VStack {
-                    Circle()
-                        .fill(fksj)
-                        .frame(width: 50, height: 50)
-                        .onTapGesture {
-                            selectedColor = fksj
-                            updateSliders(with: fksj)
-                        }
-                    Text("疯狂世界").font(.caption)
-                       // .padding(5)
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(5).foregroundColor(fksj)
+                HStack{
+                    Slider(value: $saturation, in: 0...1)
+                        .accentColor(Color.green).saturation(saturation)
+                    Text("S: \(saturation, specifier: "%.2f")").foregroundStyle(Color.blue)
                 }
-                VStack {
-                    Circle()
-                        .fill(aqws)
-                        .frame(width: 50, height: 50)
-                        .onTapGesture {
-                            selectedColor = aqws
-                            updateSliders(with: aqws)
-                        }
-                    Text("爱情万岁").font(.caption)
-                       // .padding(5)
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(5).foregroundColor(aqws)
+                HStack{
+                    Slider(value: $brightness, in: 0...1)
+                        .accentColor(.blue).brightness(brightness > 0.4 ? 0.4 : brightness)
+                    Text("L: \(brightness, specifier: "%.2f")").foregroundStyle(Color.blue)
                 }
-                VStack {
-                    Circle()
-                        .fill(rshh)
-                        .frame(width: 50, height: 50)
-                        .onTapGesture {
-                            selectedColor = rshh
-                            updateSliders(with: rshh)
-                        }
-                    Text("人生海海")  .font(.caption)
-                       // .padding(5)
-                        .background(Color.green.opacity(0.2))
-                        .cornerRadius(5).foregroundColor(rshh)
+                let fksj = ColorUtil.argbToColor(argb: "#FF3F6C7D")
+                let aqws = ColorUtil.argbToColor(argb: "#FF4AC9E3")
+                let rshh = ColorUtil.argbToColor(argb: "#FF0092BD")
+                
+                HStack(spacing: 30) {
+                    VStack {
+                        Circle()
+                            .fill(selectedColor)
+                            .frame(width: 50, height: 50)
+                            .onTapGesture {
+                                selectedColor = selectedColor
+                                updateSliders(with: selectedColor)
+                            }
+                        Text("预览颜色").font(.caption)
+                        // .padding(5)
+                            .background(Color.green.opacity(0.2))
+                            .cornerRadius(5).foregroundColor(fksj)
+                    }
+                    VStack {
+                        Circle()
+                            .fill(fksj)
+                            .frame(width: 50, height: 50)
+                            .onTapGesture {
+                                selectedColor = fksj
+                                updateSliders(with: fksj)
+                            }
+                        Text("疯狂世界").font(.caption)
+                        // .padding(5)
+                            .background(Color.green.opacity(0.2))
+                            .cornerRadius(5).foregroundColor(fksj)
+                    }
+                    VStack {
+                        Circle()
+                            .fill(aqws)
+                            .frame(width: 50, height: 50)
+                            .onTapGesture {
+                                selectedColor = aqws
+                                updateSliders(with: aqws)
+                            }
+                        Text("爱情万岁").font(.caption)
+                        // .padding(5)
+                            .background(Color.green.opacity(0.2))
+                            .cornerRadius(5).foregroundColor(aqws)
+                    }
+                    VStack {
+                        Circle()
+                            .fill(rshh)
+                            .frame(width: 50, height: 50)
+                            .onTapGesture {
+                                selectedColor = rshh
+                                updateSliders(with: rshh)
+                            }
+                        Text("人生海海")  .font(.caption)
+                        // .padding(5)
+                            .background(Color.green.opacity(0.2))
+                            .cornerRadius(5).foregroundColor(rshh)
+                    }
                 }
+                .padding()
+                .padding(.horizontal)
+                
             }
-            .padding(.top, 10)
             
-            GeometryReader { geometry in
-                DeviceGroupView(selectedColor: $selectedColor )
-                    .frame(width: geometry.size.width) // 自适应宽度并保持边距
-                    //.padding(.horizontal, 20)
-                   
-            }
+            .onChange(of: hue) { _ in    DispatchQueue.main.async {
+                updateColor()
+            } }
+            .onChange(of: saturation) { _ in    DispatchQueue.main.async {
+                updateColor()
+            } }
+            .onChange(of: brightness) { _ in    DispatchQueue.main.async {
+                updateColor()
+            } }
         }
-        
-        .onChange(of: hue) { _ in    DispatchQueue.main.async {
-            updateColor()
-        } }
-        .onChange(of: saturation) { _ in    DispatchQueue.main.async {
-            updateColor()
-        } }
-        .onChange(of: brightness) { _ in    DispatchQueue.main.async {
-            updateColor()
-        } }
-      //  .padding()
-//        .background(
-//            RoundedRectangle(cornerRadius: 10)
-//                .fill(Color.white)
-//                .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
-//        )
-       // .padding()
     }
-
     /// 更新选定颜色
     private func updateColor() {
         selectedColor = Color(hue: hue, saturation: saturation, brightness: brightness)

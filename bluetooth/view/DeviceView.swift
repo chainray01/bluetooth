@@ -10,6 +10,7 @@ struct DeviceView: View {
     @State private var currentDeviceName: String = ""
 
     private var dataManager = DatabaseManager.shared
+    
     var allSelected: Bool {
         selectedPeripherals.count == bleManager.connectedPeripherals.count
     }
@@ -111,9 +112,9 @@ struct DeviceView: View {
                     
                 })
                 .padding(3)
-                .background(Color.gray.opacity(0.2))
+                .background(Color.gray.opacity(0.1))
                 .cornerRadius(3)
-                .frame(maxWidth: 50)
+                .frame(maxWidth: 70)
                 connectionStatus
                 groupMenu(for: device)
             }
