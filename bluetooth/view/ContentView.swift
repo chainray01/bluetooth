@@ -25,10 +25,11 @@ struct ContentView: View {
                     Label("Favorites", systemImage: "star")
                 }
         }
+       
         
     }
 
 }
 #Preview {
-    ContentView( )
+    ContentView()
 }

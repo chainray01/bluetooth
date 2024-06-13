@@ -218,6 +218,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         }
     }
-
-  
+ 
 }
+ 

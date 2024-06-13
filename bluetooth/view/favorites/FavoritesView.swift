@@ -32,21 +32,24 @@ struct FavoritesView: View {
                     .padding(.horizontal)
             }
             .padding(.top, 5) // 增加一点顶部填充
-            HStack{
-                Slider(value:  $selectedSpeed, in: 0...15,step: 1).onChange(of: selectedSpeed)
-                { newColor in
-                    DispatchQueue.main.async {
-                        handleColorChange(selectedColor)
+        
+                HStack{
+                    Slider(value:  $selectedSpeed, in: 0...15,step: 1)
+                        .disabled(!isSpeedEnabled) // 根据 isSpeedEnabled 控制 Slider 的可用状态
+                        .onChange(of: selectedSpeed)
+                    { newColor in
+                        DispatchQueue.main.async {
+                            handleColorChange(selectedColor)
+                        }
                     }
-                }
-                Text("速度\(selectedSpeed, specifier: "%.0f")")}
-            .padding(.bottom,0).padding(.top,10)
+                    Text("速度\(selectedSpeed, specifier: "%.0f")")}
+                .padding(.top,10)
             ColorSelecterView(selectedColor: $selectedColor).padding(.bottom,2)
         }.onChange(of: selectedColor) { newColor in
            handleColorChange(selectedColor)
         }
       .padding()
-       // .navigationTitle("颜色混合")
+       
     }
 
 
@@ -64,6 +67,7 @@ struct FavoritesView: View {
     }
 
     func handleEnable(_ bool: Bool,_ selectColor: Color) {
+        bleManager.stopSending()
         let data =  ColorUtil.buildLightData(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
         bleManager.writeValueToAll(data)
     }

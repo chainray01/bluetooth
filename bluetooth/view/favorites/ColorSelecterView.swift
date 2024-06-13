@@ -36,7 +36,7 @@ struct ColorSelecterView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // 使视图靠近上部
-        .background(Color.gray.opacity(0.1)) // 添加背景颜色，以便区别内容区域
+        .background(Color.gray.opacity(0.03)) // 添加背景颜色，以便区别内容区域
         .padding()
     }
 }

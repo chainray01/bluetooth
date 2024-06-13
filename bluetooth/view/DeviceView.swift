@@ -41,6 +41,9 @@ struct DeviceView: View {
                     .font(.title3)
                     .padding(.leading)
                 Spacer()
+                Button(action: toggleBatchMode) {
+                    Label(isBatchModeActive ? "取消" : "批量", systemImage: "square.and.pencil")
+                }
                 Menu {
                     Button(action: {
                         bleManager.toggleScanning()
@@ -65,9 +68,7 @@ struct DeviceView: View {
                     }
                     .disabled(bleManager.connectedPeripherals.count == 0)
                     
-                    Button(action: toggleBatchMode) {
-                        Label(isBatchModeActive ? "取消" : "批量", systemImage: "square.and.pencil")
-                    }
+
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.title2).foregroundColor(Color.gray)
