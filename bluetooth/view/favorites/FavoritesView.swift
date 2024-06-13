@@ -1,12 +1,11 @@
-
 //
 //  FavoritesView.swift
 //  bluetooth
 //
-//  Created by Ray chai on 2024/5/28.
+//  Created by Ray Chai on 2024/5/28.
 //
+
 import SwiftUI
-import CoreBluetooth
 
 struct FavoritesView: View {
     @State private var isSpeedEnabled = false
@@ -15,64 +14,77 @@ struct FavoritesView: View {
     @State private var selectedSpeed: Double = 10.0
     @State private var isGroupEnabled = false
     @ObservedObject var bleManager = BLEManager.shared
+    var writeUtil = WriteDataUtil.shared
     
+    // 延时处理相关的变量
+    @State private var lastColorChangeTime = Date()
+    private let handleInterval: Double = 0.02 // 20 毫秒
     
     var body: some View {
-        VStack(spacing: 5) {  // 减少 VStack 的 spacing
+        VStack(spacing: 5) {
             HStack(spacing: 20) {
-                  Toggle("启用", isOn: $isEnabled)
-                      .onChange(of: isEnabled) { newValue in
-                          handleEnable(isEnabled, selectedColor)
-                      }
-                  
-                  Toggle("闪灯", isOn: $isSpeedEnabled)
-                      .onChange(of: isSpeedEnabled) { newValue in
-                          handleColorChange(selectedColor)
-                      }
-                  
-                  Toggle("分组", isOn: $isGroupEnabled) // Adjusted based on your requirement
-                      .onChange(of: isGroupEnabled) { newValue in
-                          handleColorChange(selectedColor)
-                      }
-              }
-              .padding(.horizontal)
-              .padding(.top, 5) // 增加一点顶部填充
-        
-                HStack{
-                    Slider(value:  $selectedSpeed, in: 0...15,step: 1)
-                        .accentColor(Color.blue).saturation(selectedSpeed/16)
-                        .disabled(!isSpeedEnabled) // 根据 isSpeedEnabled 控制 Slider 的可用状态
-                        .onChange(of: selectedSpeed)
-                    { newColor in
-                        DispatchQueue.main.async {
-                            handleColorChange(selectedColor)
-                        }
+                Toggle("启用", isOn: $isEnabled)
+                    .onChange(of: isEnabled) { newValue in
+                        handleEnable(isEnabled, selectedColor)
                     }
-                    Text("速度\(selectedSpeed, specifier: "%.0f")")}
-                .padding(.top,10)
-            ColorSelecterView(selectedColor: $selectedColor,isGroupEnabled:  $isGroupEnabled)
-        }.onChange(of: selectedColor) { newColor in
-           handleColorChange(selectedColor)
+                
+                Toggle("闪灯", isOn: $isSpeedEnabled)
+                    .onChange(of: isSpeedEnabled) { newValue in
+                        handleColorChange(selectedColor)
+                    }
+                
+                Toggle("分组", isOn: $isGroupEnabled)
+                    .onChange(of: isGroupEnabled) { newValue in
+                        handleColorChange(selectedColor)
+                    }
+            }
+            .padding(.horizontal)
+            .padding(.top, 5)
+            
+            HStack {
+                Slider(value: $selectedSpeed, in: 0...15, step: 1)
+                    .accentColor(Color.blue)
+                    .saturation(selectedSpeed / 16)
+                    .disabled(!isSpeedEnabled)
+                    .onChange(of: selectedSpeed) { newSpeed in
+                        handleColorChange(selectedColor)
+                    }
+                Text("速度 \(selectedSpeed, specifier: "%.0f")")
+            }
+            .padding(.top, 10)
+            
+            ColorSelecterView(selectedColor: $selectedColor, isGroupEnabled: $isGroupEnabled)
         }
-      .padding()
-       
+        .onChange(of: selectedColor) { newColor in
+            handleColorChange(selectedColor)
+        }
+        .padding()
     }
-
-
-    func handleColorChange(_ selectColor: Color) {
- 
-        let data = ColorUtil.buildLightData(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
-        bleManager.writeValueToAll(data)
+    
+      func handleColorChange(_ selectColor: Color) {
+        let currentTime = Date()
+        let timeInterval = currentTime.timeIntervalSince(lastColorChangeTime)
+        //太快了数据量太大 会导致棒子迟滞
+        if timeInterval >= 0.025 {
+            lastColorChangeTime = currentTime
+            
+            let data = ColorUtil.buildLightData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+            if isEnabled {
+                writeUtil.writeValueToAll(data)
+            }
+        }
     }
-    func handleFlashing(_ selectColor: Color) {
-      }
-
-    func handleEnable(_ bool: Bool,_ selectColor: Color) {
-        bleManager.stopSending()
-        let data =  ColorUtil.buildLightData(selectColor,isEnabled,isSpeedEnabled, speed: selectedSpeed)
-        bleManager.writeValueToAll(data)
+    
+    func handleEnable(_ bool: Bool, _ selectColor: Color) {
+        if !bool {
+            writeUtil.stopSending()
+            let data = ColorUtil.buildTurnOff()
+            writeUtil.writeValueToAll(data)
+        } else {
+            let data = ColorUtil.buildLightData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+            writeUtil.writeValueToAll(data)
+        }
     }
-
 }
 
 struct FavoritesView_Previews: PreviewProvider {

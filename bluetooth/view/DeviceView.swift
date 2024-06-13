@@ -9,6 +9,7 @@ struct DeviceView: View {
     @State private var showConnected = false
     @State private var currentDeviceName: String = ""
 
+    var  cu = WriteDataUtil.shared
     private var dataManager = DatabaseManager.shared
     
     var allSelected: Bool {
@@ -41,40 +42,46 @@ struct DeviceView: View {
             Button(action: toggleBatchMode) {
                 Label(isBatchModeActive ? "取消" : "批量", systemImage: "square.and.pencil")
             }
-            Menu {
-                Button(action: {
-                    bleManager.toggleScanning()
-                }) {
-                    Label(bleManager.isScanning ? "点击暂停扫描" : "启动扫描", systemImage: "magnifyingglass")
-                }
-                
-                Button(action: {
-                    showConnected.toggle()
-                }) {
-                    Label(!showConnected ? "展示所有设备" : "展示已连接的设备", systemImage: "line.horizontal.3.decrease.circle")
-                }
-                
-                Button(action: {
-                    if bleManager.connectedPeripherals.count > 0 {
+            ZStack {
+                Menu {
+                    Button(action: {
                         bleManager.toggleScanning()
-                        bleManager.disconnectAll()
+                    }) {
+                        Label(bleManager.isScanning ? "点击暂停扫描" : "启动扫描", systemImage: "magnifyingglass")
                     }
-                }) {
-                    Label("断开所有设备连接", systemImage: "xmark.circle")
-                        .foregroundColor(bleManager.connectedPeripherals.count > 0 ? .blue : .gray)
+                    
+                    Button(action: {
+                        bleManager.sort()
+                    }) {
+                        Label("排序", systemImage: "line.horizontal.3.decrease.circle")
+                    }
+                    Button(action: {
+                        showConnected.toggle()
+                    }) {
+                        Label(!showConnected ? "展示所有设备" : "展示已连接的设备", systemImage: "line.horizontal.3.decrease.circle")
+                    }
+                    
+                    Button(action: {
+                        if bleManager.connectedPeripherals.count > 0 {
+                            bleManager.toggleScanning()
+                            cu.disconnectAll()
+                        }
+                    }) {
+                        Label("断开所有设备连接", systemImage: "xmark.circle")
+                            .foregroundColor(bleManager.connectedPeripherals.count > 0 ? .blue : .gray)
+                    }
+                    .disabled(bleManager.connectedPeripherals.count == 0)
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.title2).foregroundColor(Color.gray)
+                        .padding()
+                        .frame(minWidth: 50) // Adjust width here as needed
                 }
-                .disabled(bleManager.connectedPeripherals.count == 0)
-            } label: {
-                Image(systemName: "ellipsis")
-                    .font(.title2).foregroundColor(Color.gray)
-                    .padding(.trailing)
-                    .frame(minWidth: 60) // Adjust width here as needed
             }
         }
         .padding(20)
         .background(Color.gray.opacity(0.1))
     }
-
     /// List view displaying the devices
     private var deviceList: some View {
         List {
@@ -114,7 +121,7 @@ struct DeviceView: View {
                 .padding(3)
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(3)
-                .frame(maxWidth: 70)
+                .frame(maxWidth: 50)
                 connectionStatus
                 groupMenu(for: device)
             }
@@ -213,8 +220,9 @@ struct DeviceView: View {
             }
             .padding()
         }
-        .background(Color.gray.opacity(0.05))
         .padding(3)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(10)
     }
 
     /// Toggles batch mode

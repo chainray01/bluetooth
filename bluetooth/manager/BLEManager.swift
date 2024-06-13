@@ -15,7 +15,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
 
     private var scanTimer: Timer?
     private var sendWorkItems: [DispatchWorkItem] = []
-    private var isSending = false
+    private var stopSendFlag = false
 
     override private init() {
         super.init()
@@ -64,7 +64,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             peripherals.append((peripheral, RSSI, localName, nil))
         }
         
-        peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
+      
         
         if localName.hasPrefix("MD") || peripheral.name == "MD000000000000" {
             connect(to: peripheral)
@@ -130,49 +130,13 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         print("Received data from peripheral: \(peripheral.identifier), characteristic: \(characteristic.uuid), data: \(data)")
     }
 
-    func writeValueToAll(_ data: Data) {
-        guard !connectedPeripherals.isEmpty else { return }
 
-        isSending = true
-        let dispatchGroup = DispatchGroup()
-        let queue = DispatchQueue(label: "com.ble.writeQueue", attributes: .concurrent)
-
-        for peripheral in connectedPeripherals {
-            if let characteristics = self.characteristics[peripheral] {
-                for characteristic in characteristics where characteristic.uuid == characteristicUUID {
-                    let workItem = DispatchWorkItem {
-                        self.writeValue(data, for: characteristic, on: peripheral)
-                        dispatchGroup.leave()
-                    }
-                    sendWorkItems.append(workItem)
-                    dispatchGroup.enter()
-                    queue.async(execute: workItem)
-                }
-            }
-        }
-
-        dispatchGroup.notify(queue: .main) {
-            self.isSending = false
-            print("All data written successfully")
-        }
-    }
 
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, on peripheral: CBPeripheral) {
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
     }
 
-    func disconnectAll() {
-        stopSending()
-        let data = ColorUtil.buildTurnOff()
-        writeValueToAll(data)
-        for peripheral in connectedPeripherals {
-            centralManager.cancelPeripheralConnection(peripheral)
-        }
-        connectedPeripherals.removeAll()
-        peripherals.removeAll()
-        characteristics.removeAll()
-        print("Disconnected all peripherals")
-    }
+ 
     
     func disconnect(peripheral: CBPeripheral) {
         let data = ColorUtil.buildTurnOff()
@@ -189,15 +153,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         characteristics.removeValue(forKey: peripheral)
     }
     
-    func stopSending() {
-        isSending = false
-        for workItem in sendWorkItems {
-            workItem.cancel()
-        }
-        sendWorkItems.removeAll()
-        print("Stopped all sending tasks")
-    }
-
     func toggleScanning() {
         isScanning ? stopScanning() : startScanning()
     }
@@ -211,7 +166,9 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         scanTimer?.invalidate()
         scanTimer = nil
     }
-
+    func sort(){
+        peripherals.sort { $0.rssi.intValue > $1.rssi.intValue }
+    }
     private func startTimer() {
         scanTimer?.invalidate()
         scanTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in

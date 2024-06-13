@@ -110,7 +110,7 @@ class ColorUtil{
     }
     
     static func buildTurnOff() -> Data {
-      return  buildLightData(ColorUtil.argbToColor(argb: "#FF0092BD"),false,false, speed: 10)
+      return  buildLightData(ColorUtil.argbToColor(argb: "#FF0092BD"),false,true, speed: 1)
     }
   
 }
