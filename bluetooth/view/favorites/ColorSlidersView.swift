@@ -40,7 +40,7 @@ struct ColorSlidersView: View {
                     VStack {
                         Circle()
                             .fill(selectedColor)
-                            .frame(width: 55, height: 55)
+                            .frame(width: 50, height: 50)
                             .onTapGesture {
                                 selectedColor = selectedColor
                                 updateSliders(with: selectedColor)
@@ -53,7 +53,7 @@ struct ColorSlidersView: View {
                     VStack {
                         Circle()
                             .fill(fksj)
-                            .frame(width: 55, height: 55)
+                            .frame(width: 50, height: 50)
                             .onTapGesture {
                                 selectedColor = fksj
                                 updateSliders(with: fksj)
@@ -66,7 +66,7 @@ struct ColorSlidersView: View {
                     VStack {
                         Circle()
                             .fill(aqws)
-                            .frame(width: 55, height: 55)
+                            .frame(width: 50, height: 50)
                             .onTapGesture {
                                 selectedColor = aqws
                                 updateSliders(with: aqws)

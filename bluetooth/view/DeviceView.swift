@@ -9,7 +9,7 @@ struct DeviceView: View {
     @State private var showConnected = false
     @State private var currentDeviceName: String = ""
 
-    var  cu = WriteDataUtil.shared
+    var  writeData = WriteDataUtil.shared
     private var dataManager = DatabaseManager.shared
     
     var allSelected: Bool {
@@ -64,7 +64,7 @@ struct DeviceView: View {
                     Button(action: {
                         if bleManager.connectedPeripherals.count > 0 {
                             bleManager.toggleScanning()
-                            cu.disconnectAll()
+                            writeData.disconnectAll()
                         }
                     }) {
                         Label("断开所有设备连接", systemImage: "xmark.circle")

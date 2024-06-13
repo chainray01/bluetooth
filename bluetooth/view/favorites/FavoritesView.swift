@@ -75,13 +75,13 @@ struct FavoritesView: View {
         }
     }
     
-    func handleEnable(_ bool: Bool, _ selectColor: Color) {
-        if !bool {
-            writeUtil.stopSending()
-            let data = ColorUtil.buildTurnOff()
+    func handleEnable(_ enabled: Bool, _ selectColor: Color) {
+        if enabled {
+            let data = ColorUtil.buildLightData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
             writeUtil.writeValueToAll(data)
         } else {
-            let data = ColorUtil.buildLightData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+            writeUtil.stopSending()
+            let data = ColorUtil.buildTurnOff()
             writeUtil.writeValueToAll(data)
         }
     }

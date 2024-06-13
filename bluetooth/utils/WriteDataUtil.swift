@@ -23,7 +23,6 @@ class WriteDataUtil {
         }
         sendWorkItems.removeAll()
         sendQueue.resume()
-        print("Stopped all sending tasks")
     }
     
     func writeValueToAll(_ data: Data) {
@@ -32,7 +31,7 @@ class WriteDataUtil {
         stopSendFlag = false
         let dispatchGroup = DispatchGroup()
         
-        for peripheral in bleManager.connectedPeripherals {
+        bleManager.connectedPeripherals.forEach { peripheral in
             if let characteristics = bleManager.characteristics[peripheral],
                let characteristic = characteristics.first(where: { $0.uuid == bleManager.characteristicUUID }) {
                 
@@ -57,6 +56,10 @@ class WriteDataUtil {
             }
         }
         
+        notifyCompletion(for: dispatchGroup)
+    }
+    
+    private func notifyCompletion(for dispatchGroup: DispatchGroup) {
         dispatchGroup.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
             print("stopSendFlag: \(self.stopSendFlag)")
@@ -66,7 +69,7 @@ class WriteDataUtil {
     
     func disconnectAll() {
         stopSending()
-        let data = ColorUtil.buildTurnOff() // Assuming ColorUtil is another utility class
+        let data = ColorUtil.buildTurnOff()
         writeValueToAll(data)
         
         for peripheral in bleManager.connectedPeripherals {
