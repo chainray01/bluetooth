@@ -63,6 +63,22 @@ class DatabaseManager {
         sqlite3_finalize(insertStatement)
     }
 
+    func deleteDevice(id: String ) {
+        let deleteSql = "delete  from  Devices where id = ?;"
+        var deleteStament: OpaquePointer?
+        if sqlite3_prepare_v2(db, deleteSql, -1, &deleteStament, nil) == SQLITE_OK {
+            sqlite3_bind_text(deleteStament, 1, id, -1, nil)
+            if sqlite3_step(deleteStament) == SQLITE_DONE {
+            } else {
+                print("Could not delete row.")
+            }
+        }
+        sqlite3_finalize(deleteStament)
+    }
+    
+    
+    
+    
     func fetchDeviceName(id: String) -> String? {
         let queryStatementString = "SELECT name FROM Devices WHERE id = ?;"
         var queryStatement: OpaquePointer?
@@ -72,7 +88,7 @@ class DatabaseManager {
             if sqlite3_step(queryStatement) == SQLITE_ROW {
                 name = String(describing: String(cString: sqlite3_column_text(queryStatement, 0)))
             } else {
-                print("Query returned no results.")
+               // print("Query returned no results.")
             }
         } else {
             print("SELECT statement could not be prepared.")
