@@ -11,7 +11,8 @@ struct ColorGridView: View {
     @Binding var selectedColor: Color
     @State private var pressedColors: [Color: Bool] = [:]
     @State private var dragLocation: CGPoint = .zero
-
+  //  var onSelect: (Color) -> Void
+    
     let colors: [[Color]] = {
         var colors = [[Color]]()
         for hue in stride(from: 0.1, to: 1.0, by: 0.1) {
@@ -57,6 +58,7 @@ struct ColorGridView: View {
 
     private func selectColor(_ color: Color) {
         selectedColor = color
+        //onSelect(color)
         withAnimation {
             pressedColors[color] = true
         }
@@ -87,5 +89,6 @@ struct ColorGridView: View {
 struct ColorGridView_Previews: PreviewProvider {
     static var previews: some View {
         ColorGridView(selectedColor: .constant(Color.white))
+      //  ColorGridView(selectedColor: .constant(Color.white), onSelect: { _ in })
     }
 }

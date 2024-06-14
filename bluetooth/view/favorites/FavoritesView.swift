@@ -65,7 +65,7 @@ struct FavoritesView: View {
         let currentTime = Date()
         let timeInterval = currentTime.timeIntervalSince(lastColorChangeTime)
         //太快了数据量太大 会导致棒子响应迟滞
-        if timeInterval >= 0.05 {
+        if timeInterval >= 0.025 {
             lastColorChangeTime = currentTime
             let data = ColorUtil.buildLightData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
             if isEnabled {
@@ -77,6 +77,7 @@ struct FavoritesView: View {
     func handleEnable(_ enabled: Bool, _ selectColor: Color) {
         if enabled {
             let data = ColorUtil.buildLightData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+     
             writeUtil.writeValueToAll(data)
         } else {
             writeUtil.stopSending()

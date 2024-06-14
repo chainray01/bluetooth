@@ -33,9 +33,7 @@ class ColorUtil{
     /// - Returns: 字节数组
     static func buildColorData(red: UInt8,  green:UInt8,    blue:UInt8, isEnabled: Bool=true,
                                isSpeedEnabled: Bool=false, speed: Double) -> Data {
-        // Convert hex color string to RGB
-        // let rgb = hexToRGB(hex: hex)
-        
+         
         // Set the "enabled" and "speed" flags
         let enabledFlag: UInt8 = isEnabled ? UInt8(bitPattern: -1) : 0
         let speedFlag: UInt8 = isSpeedEnabled ? UInt8(bitPattern: -1) : 0
@@ -43,10 +41,7 @@ class ColorUtil{
         // Calculate the speed value
         let result = pow(16 - speed, 2) - 1
         let speedValue: UInt8 = UInt8(result) & 0xFF
-
-        
-       // let speedValue: UInt8 = UInt8(pow(Double(16 - speed), 2) - 1) & 0xFF
-        //let speedValue = UInt8(((255 - pow(16 - speed, 2) + 1)).truncatingRemainder(dividingBy: 256))
+ 
         // Create an 8-byte array to hold the command data
         var commandData = Data(count: 8)
         
@@ -67,7 +62,7 @@ class ColorUtil{
         commandData[7] = speedValue
         
         // Return the prepared Data
-        return commandData
+         return commandData
     }
     
     static func argbToColor(argb: String) -> Color {

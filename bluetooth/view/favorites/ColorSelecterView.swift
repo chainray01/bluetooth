@@ -37,7 +37,7 @@ struct ColorSelecterView: View {
                 }
             }
             if isGroupEnabled{
-                DeviceGroupView(selectedColor:$selectedColor)
+               // DeviceGroupView(selectedColor:$selectedColor)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // 使视图靠近上部

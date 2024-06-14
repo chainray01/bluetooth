@@ -68,7 +68,7 @@ class WriteDataUtil {
     private func notifyCompletion(for dispatchGroup: DispatchGroup) {
         dispatchGroup.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
-            print("stopSendFlag: \(self.stopSendFlag)")
+          //  print("stopSendFlag: \(self.stopSendFlag)")
           
             // UI updates or other main thread tasks go here
         }
