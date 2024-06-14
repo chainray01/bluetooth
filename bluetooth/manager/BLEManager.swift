@@ -1,3 +1,9 @@
+//
+//  BLEManager.swift
+//  bluetooth
+//  BLE 控制器
+//  Created by Ray chai on 2024/6/8.
+//
 import Foundation
 import CoreBluetooth
 import SwiftUI
