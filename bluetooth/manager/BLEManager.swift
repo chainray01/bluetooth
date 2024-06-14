@@ -56,7 +56,6 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         guard let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String else { return }
-        
         if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
             peripherals[index].rssi = RSSI
             peripherals[index].localName = localName
@@ -174,6 +173,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         scanTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
             self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         }
+        scanTimer!.fireDate = Date().addingTimeInterval(1)
+        RunLoop.main.add(scanTimer!, forMode: .common)
     }
  
 }

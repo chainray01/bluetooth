@@ -47,7 +47,13 @@ class WriteDataUtil {
                         return
                     }
                     
-                    self.bleManager.writeValue(data, for: characteristic, on: peripheral)
+                    bleManager.writeValue(data, for: characteristic, on: peripheral)
+                    // 再次检查 stopSendFlag，以便在长时间操作后响应停止信号
+                     if self.stopSendFlag {
+                         dispatchGroup.leave()
+                         return // 提前退出
+                     }
+                    
                     dispatchGroup.leave()
                 }
                 
@@ -63,6 +69,7 @@ class WriteDataUtil {
         dispatchGroup.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
             print("stopSendFlag: \(self.stopSendFlag)")
+          
             // UI updates or other main thread tasks go here
         }
     }

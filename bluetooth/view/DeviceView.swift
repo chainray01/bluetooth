@@ -7,7 +7,7 @@ struct DeviceView: View {
     @State private var selectedPeripherals = Set<UUID>()
     @State private var isBatchModeActive = false
     @State private var showConnected = false
-    @State private var currentDeviceName: String = ""
+    @State private var udname: String = ""
 
     var  writeData = WriteDataUtil.shared
     private var dataManager = DatabaseManager.shared
@@ -58,7 +58,7 @@ struct DeviceView: View {
                     Button(action: {
                         showConnected.toggle()
                     }) {
-                        Label(!showConnected ? "展示所有设备" : "展示已连接的设备", systemImage: "line.horizontal.3.decrease.circle")
+                        Label(showConnected ? "展示所有设备" : "筛选已连接的设备", systemImage: "line.horizontal.3.decrease.circle")
                     }
                     
                     Button(action: {
@@ -77,6 +77,8 @@ struct DeviceView: View {
                         .padding()
                         .frame(minWidth: 50) // Adjust width here as needed
                 }
+                .id("headermenu")
+                .menuStyle(BorderlessButtonMenuStyle())
             }
         }
         .padding(20)
@@ -85,12 +87,14 @@ struct DeviceView: View {
     /// List view displaying the devices
     private var deviceList: some View {
         List {
-            ForEach(bleManager.peripherals, id: \.peripheral.identifier) { device in
-                if showConnected && bleManager.connectedPeripherals.contains(device.peripheral) {
+            ForEach(bleManager.peripherals.filter { peripheral in
+                // 如果 showConnected 为 true，则仅展示已连接的设备；
+                // 否则，展示所有设备。
+                !showConnected || bleManager.connectedPeripherals.contains(where: { $0.identifier == peripheral.peripheral.identifier })
+            },  id: \.peripheral.identifier) { device in
+                 
                     deviceRow(for: device)
-                } else {
-                    deviceRow(for: device)
-                }
+                
             }
         }
         .listStyle(PlainListStyle())
@@ -110,10 +114,10 @@ struct DeviceView: View {
             Spacer()
             if bleManager.connectedPeripherals.contains(device.peripheral) {
                 let uname: String? = dataManager.fetchDeviceName(id: device.peripheral.identifier.uuidString)
-                TextField(uname ?? "自定义名称", text: $currentDeviceName, onCommit: {
+                TextField(uname ?? "自定义名称", text: $udname, onCommit: {
                     dataManager.deleteDevice(id: device.peripheral.identifier.uuidString)
-                    if currentDeviceName != ""{
-                        dataManager.insertDevice(id: device.peripheral.identifier.uuidString, name: currentDeviceName)
+                    if udname != ""{
+                        dataManager.insertDevice(id: device.peripheral.identifier.uuidString, name: udname)
                     }
                     
                     
@@ -147,9 +151,8 @@ struct DeviceView: View {
             Text(device.localName ?? device.peripheral.identifier.uuidString)
                 .font(.headline)
                 .foregroundColor(.primary)
-            Text("信号强度 (RSSI): \(device.rssi)")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            Text(device.peripheral.identifier.uuidString).font(.system(size: 6)).foregroundColor(.secondary)
+          //  Text("信号强度 (RSSI): \(device.rssi)").font(.subheadline).foregroundColor(.secondary)
         }
     }
 
@@ -189,6 +192,7 @@ struct DeviceView: View {
             .background(Color.gray.opacity(0.2))
             .cornerRadius(3)
         }
+        
     }
 
     /// Batch actions view
@@ -218,6 +222,8 @@ struct DeviceView: View {
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(3)
             }
+           
+            .menuStyle(.automatic)
             .padding()
         }
         .padding(3)
