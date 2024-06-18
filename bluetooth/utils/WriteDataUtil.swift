@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import CoreBluetooth
 class WriteDataUtil {
     static let shared = WriteDataUtil()
     
@@ -73,6 +73,11 @@ class WriteDataUtil {
             // UI updates or other main thread tasks go here
         }
     }
+    
+    func writeValueTo(_ data: Data,devices:[CBPeripheral]) {
+        
+    }
+    
     
     func disconnectAll() {
         stopSending()

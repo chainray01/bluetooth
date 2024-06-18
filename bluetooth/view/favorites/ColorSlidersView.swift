@@ -10,9 +10,9 @@ import SwiftUI
 /// 颜色滑块视图，允许用户通过滑块调整颜色
 struct ColorSlidersView: View {
     @Binding var selectedColor: Color
-    @State private var hue: Double = 0.5
-    @State private var saturation: Double = 0.8
-    @State private var brightness: Double = 0.3
+    @State private var hue: Double = 0.54
+    @State private var saturation: Double = 1.0
+    @State private var brightness: Double = 0.74
 
     var body: some View {
         GeometryReader { geometry in
@@ -24,12 +24,14 @@ struct ColorSlidersView: View {
                 }
                 HStack{
                     Slider(value: $saturation, in: 0...1)
-                        .accentColor(Color.green).saturation(saturation)
+                        .accentColor(Color.green)
+                        //.saturation(saturation)
                     Text("S: \(saturation, specifier: "%.2f")").foregroundStyle(Color.blue)
                 }
                 HStack{
                     Slider(value: $brightness, in: 0...1)
-                        .accentColor(.blue).brightness(brightness > 0.4 ? 0.4 : brightness)
+                        .accentColor(.blue)
+                        //.brightness(brightness > 0.4 ? 0.4 : brightness)
                     Text("L: \(brightness, specifier: "%.2f")").foregroundStyle(Color.blue)
                 }
                 let fksj = ColorUtil.argbToColor(argb: "#FF3F6C7D")
@@ -90,8 +92,8 @@ struct ColorSlidersView: View {
                             .cornerRadius(5).foregroundColor(rshh)
                     }
                 }
-                .padding()
-                .padding(.horizontal)
+                //.padding()
+                //.padding(.horizontal)
                 
             }
             

@@ -84,7 +84,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         connectedPeripherals.insert(peripheral)
         peripheral.delegate = self
-        peripheral.discoverServices([serviceUUID])
+        peripheral.discoverServices(nil)
         print("Connected to peripheral: \(peripheral.identifier)")
     }
 
@@ -104,7 +104,9 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         
         for service in services {
             if service.uuid == serviceUUID {
-                peripheral.discoverCharacteristics([characteristicUUID], for: service)
+            print("discover services for peripheral: \(peripheral.identifier),service:\(service.uuid)")
+                peripheral.discoverCharacteristics(nil, for: service)
+              //  peripheral.discoverCharacteristics([characteristicUUID], for: service)
             }
         }
     }
@@ -132,7 +134,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
             print("Failed to read value for characteristic: \(characteristic.uuid), error: \(error?.localizedDescription ?? "unknown error")")
             return
         }
-        print("Received data from peripheral: \(peripheral.identifier), characteristic: \(characteristic.uuid), data: \(data)")
+      //  print("Received data from peripheral: \(peripheral.identifier), characteristic: \(characteristic.uuid), data: \(data)")
     }
 
 

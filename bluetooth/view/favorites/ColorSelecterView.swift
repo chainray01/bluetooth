@@ -19,7 +19,7 @@ struct ColorSelecterView: View {
                 Text("Grid").tag(0)
                 Text("HSL").tag(1)
             }
-            .pickerStyle(SegmentedPickerStyle())
+            .pickerStyle(.segmented)
             .padding(15)
 
             GeometryReader { geometry in
@@ -27,18 +27,15 @@ struct ColorSelecterView: View {
                     if selectedView == 0 {
                         ColorGridView(selectedColor: $selectedColor)
                             .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
-                           // .padding() // 增加内边距避免内容贴边
+                           // .padding(.top,10) // 增加内边距避免内容贴边
                             
                     } else {
                         ColorSlidersView(selectedColor: $selectedColor)
                             .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
-                            .padding(5) // 增加内边距避免内容贴边
                     }
                 }
-            }
-            if isGroupEnabled{
-               // DeviceGroupView(selectedColor:$selectedColor)
-            }
+            }.padding(.top,10)
+           
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // 使视图靠近上部
         .background(Color.gray.opacity(0.03)) // 添加背景颜色，以便区别内容区域

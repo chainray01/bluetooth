@@ -393,6 +393,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = bluetooth/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "荧光棒";
+				"INFOPLIST_KEY_CFBundleDisplayName[sdk=iphoneos*]" = "荧光棒";
+				"INFOPLIST_KEY_CFBundleDisplayName[sdk=macosx*]" = "荧光棒";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "需要使用蓝牙进行数据传输";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "需要使用蓝牙进行数据传输";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -431,6 +435,10 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = bluetooth/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "荧光棒";
+				"INFOPLIST_KEY_CFBundleDisplayName[sdk=iphoneos*]" = "荧光棒";
+				"INFOPLIST_KEY_CFBundleDisplayName[sdk=macosx*]" = "荧光棒";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "需要使用蓝牙进行数据传输";
 				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "需要使用蓝牙进行数据传输";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
