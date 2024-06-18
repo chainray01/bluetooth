@@ -17,7 +17,7 @@ struct ColorSelecterView: View {
         VStack {
             Picker("View Selection", selection: $selectedView) {
                 Text("Grid").tag(0)
-                Text("Sliders").tag(1)
+                Text("HSL").tag(1)
             }
             .pickerStyle(SegmentedPickerStyle())
             .padding(15)

@@ -11,6 +11,7 @@ struct FavoritesView: View {
     @State private var isSpeedEnabled = false
     @State private var isEnabled = true
     @State private var selectedColor = ColorUtil.argbToColor(argb: "#FF0092BD")
+
     @State private var selectedSpeed: Double = 10.0
     @State private var isGroupEnabled = false
     @ObservedObject var bleManager = BLEManager.shared
@@ -42,7 +43,7 @@ struct FavoritesView: View {
             .padding(.top, 5)
             
             HStack {
-                Slider(value: $selectedSpeed, in: 0...15, step: 1)
+                Slider(value: $selectedSpeed, in: 0...16, step: 1)
                     .accentColor(Color.blue)
                     .saturation(selectedSpeed / 16)
                     .disabled(!isSpeedEnabled)
@@ -77,7 +78,6 @@ struct FavoritesView: View {
     func handleEnable(_ enabled: Bool, _ selectColor: Color) {
         if enabled {
             let data = ColorUtil.buildLightData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
-     
             writeUtil.writeValueToAll(data)
         } else {
             writeUtil.stopSending()

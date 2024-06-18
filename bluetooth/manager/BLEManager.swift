@@ -70,8 +70,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
         
       
-        
-        if localName.hasPrefix("MD") || peripheral.name == "MD000000000000" {
+      //name.startsWith("MD") || name.startsWith("CD") || name.startsWith("B5") || name.startsWith("B2"))
+        if localName.hasPrefix("MD") || localName.hasPrefix("CD") || localName.hasPrefix("B5") || localName.hasPrefix("B2"){
             connect(to: peripheral)
         }
     }
@@ -140,9 +140,14 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, on peripheral: CBPeripheral) {
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
     }
-
- 
     
+    
+    // 按 groupTag 筛选
+    func filterPeripherals(by groupTag: String) -> [CBPeripheral] {
+        return peripherals.filter { $0.groupTag == groupTag }.map{$0.peripheral}
+    }
+ 
+
     func disconnect(peripheral: CBPeripheral) {
         let data = ColorUtil.buildTurnOff()
         if let characteristics = self.characteristics[peripheral] {

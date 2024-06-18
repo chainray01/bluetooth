@@ -37,21 +37,23 @@ class ColorUtil{
         // Set the "enabled" and "speed" flags
         let enabledFlag: UInt8 = isEnabled ? UInt8(bitPattern: -1) : 0
         let speedFlag: UInt8 = isSpeedEnabled ? UInt8(bitPattern: -1) : 0
-        
-        // Calculate the speed value
-        let result = pow(16 - speed, 2) - 1
-        let speedValue: UInt8 = UInt8(result) & 0xFF
- 
+      
+            // 将 speed 限制在 0 到 16 之间
+        let clampedSpeed = min(max(speed, 0), 16)
+           // 计算 result
+        let result = (16 - clampedSpeed) * (16 - clampedSpeed) - 1
+           // 确保结果在 0 到 255 之间
+        let speedValue = UInt8( max(min(Int(result), 255), 0))
         // Create an 8-byte array to hold the command data
         var commandData = Data(count: 8)
         
-        // Set the fixed command header
+        // Set the fixed command header 170 161
         commandData[0] = 0xAA
         commandData[1] = 0xA1
         
         // Set the RGB values
         commandData[2] = red
-        commandData[3] =  green
+        commandData[3] = green
         commandData[4] = blue
         
         // Set the "enabled" and "speed" flags
