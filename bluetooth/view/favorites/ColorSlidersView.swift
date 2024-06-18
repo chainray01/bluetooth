@@ -11,12 +11,12 @@ import SwiftUI
 struct ColorSlidersView: View {
     @Binding var selectedColor: Color
     @State private var hue: Double = 0.5
-    @State private var saturation: Double = 0.5
-    @State private var brightness: Double = 0.5
+    @State private var saturation: Double = 0.8
+    @State private var brightness: Double = 0.3
 
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 20) {
+            VStack(spacing: 40) {
                 HStack{
                     Slider(value: $hue, in: 0...1)
                         .accentColor(Color(hue: hue, saturation: saturation, brightness: brightness))
