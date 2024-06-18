@@ -63,7 +63,7 @@ struct DeviceView: View {
                     
                     Button(action: {
                         if bleManager.connectedPeripherals.count > 0 {
-                            bleManager.toggleScanning()
+                         //   bleManager.toggleScanning()
                             writeData.disconnectAll()
                         }
                     }) {

@@ -11,7 +11,7 @@ class ColorUtil{
     
     
     //颜色转rbg分量
-    static func toRGBUInt8(color:Color) -> (red: UInt8, green: UInt8, blue: UInt8) {
+static func toRGBUInt8(color:Color) -> (red: UInt8, green: UInt8, blue: UInt8) {
         let components =  color.cgColor?.components
         let red = components?[0] ?? 0
         let green = components?[1] ?? 0
