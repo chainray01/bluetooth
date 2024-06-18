@@ -43,18 +43,21 @@ struct FavoritesView: View {
             .padding(.top, 5)
             
             HStack {
-                Slider(value: $selectedSpeed, in: 0...16, step: 1)
+                Slider(value: $selectedSpeed, in: 0 ... Constants.maxSpeed, step: 1)
                     .accentColor(Color.blue)
-                    .saturation(selectedSpeed / 16)
+                    .saturation(selectedSpeed / Constants.maxSpeed)
                     .disabled(!isSpeedEnabled)
+                    
                     .onChange(of: selectedSpeed) { newSpeed in
                         handleColorChange(selectedColor)
                     }
-                Text("速度 \(selectedSpeed, specifier: "%.0f")")
+                    .frame(minWidth: 0, maxWidth: .infinity) // 确保 Slider 占据尽可能多的空间
+                Text("速度 \(String(format: "%.0f", selectedSpeed))")
+                    .frame(width: 60, alignment: .leading) // 固定宽度以确保布局稳定
             }
-            .padding(.top, 10)
+            .padding(15)
             
-            ColorSelecterView(selectedColor: $selectedColor, isGroupEnabled: $isGroupEnabled)
+            ColorSelecterView(selectedColor: $selectedColor)
         }
         .onChange(of: selectedColor) { newColor in
             handleColorChange(selectedColor)
@@ -66,23 +69,29 @@ struct FavoritesView: View {
         let currentTime = Date()
         let timeInterval = currentTime.timeIntervalSince(lastColorChangeTime)
         //太快了数据量太大 会导致棒子响应迟滞
-        if timeInterval >= 0.025 {
+        if timeInterval >= 0.02 {
             lastColorChangeTime = currentTime
-            let data = ColorUtil.buildColorData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
             if isEnabled {
-                writeUtil.writeValueToAll(data)
+                Task{
+                        let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+                       writeUtil.writeValueToAll(data)
+                }
             }
         }
     }
     
     func handleEnable(_ enabled: Bool, _ selectColor: Color) {
         if enabled {
-            let data = ColorUtil.buildColorData(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
-            writeUtil.writeValueToAll(data)
+            Task{ 
+                    let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+                    writeUtil.writeValueToAll(data)
+            }
         } else {
-            writeUtil.stopSending()
-            let data = ColorUtil.buildTurnOff()
-            writeUtil.writeValueToAll(data)
+            Task{
+                writeUtil.stopSending()
+                let data = ColorUtil.buildTurnOff()
+                writeUtil.writeValueToAll(data)
+            }
         }
     }
 }

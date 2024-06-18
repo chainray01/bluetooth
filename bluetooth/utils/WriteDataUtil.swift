@@ -33,7 +33,7 @@ class WriteDataUtil {
         
         bleManager.connectedPeripherals.forEach { peripheral in
             if let characteristics = bleManager.characteristics[peripheral],
-               let characteristic = characteristics.first(where: { $0.uuid == bleManager.characteristicUUID }) {
+               let characteristic = characteristics.first(where: { $0.uuid == Constants.characteristicUUID }) {
                 
                 dispatchGroup.enter()
                 let workItem = DispatchWorkItem { [weak self] in

@@ -13,9 +13,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String?, groupTag: String?)] = []
     @Published var connectedPeripherals: Set<CBPeripheral> = []
     @Published var characteristics: [CBPeripheral: [CBCharacteristic]] = [:]
-
-    let serviceUUID = CBUUID(string: "00007610-0000-1000-8000-00805F9B34FB")
-    let characteristicUUID = CBUUID(string: "00007613-0000-1000-8000-00805F9B34FB")
+ 
     var centralManager: CBCentralManager!
     static let shared = BLEManager()
 
@@ -103,7 +101,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
         }
         
         for service in services {
-            if service.uuid == serviceUUID {
+            if service.uuid == Constants.serviceUUID {
             print("discover services for peripheral: \(peripheral.identifier),service:\(service.uuid)")
                 peripheral.discoverCharacteristics(nil, for: service)
               //  peripheral.discoverCharacteristics([characteristicUUID], for: service)
@@ -153,7 +151,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func disconnect(peripheral: CBPeripheral) {
         let data = ColorUtil.buildTurnOff()
         if let characteristics = self.characteristics[peripheral] {
-            for characteristic in characteristics where characteristic.uuid == characteristicUUID {
+            for characteristic in characteristics where characteristic.uuid == Constants.characteristicUUID {
                 peripheral.writeValue(data, for: characteristic, type: .withResponse)
             }
         }

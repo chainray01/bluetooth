@@ -19,6 +19,8 @@ class ColorUtil {
     return ( UInt8(red * 255), UInt8(green * 255), UInt8(blue * 255)
     )
   }
+    
+    
   /// 颜色数据转荧光棒字节数组
   /// - Parameters:
   ///   - red: red
@@ -27,19 +29,13 @@ class ColorUtil {
   ///   - isEnabled: 是否点亮
   ///   - isSpeedEnabled: 是否闪烁
   ///   - speed: 闪烁速度
-  /// - Returns: 字节数组
+  /// - Returns: [170, 161, 0, 146, 189, 255, 255, 20]
   static func buildColorData( red: UInt8, green: UInt8, blue: UInt8, isEnabled: Bool = true, isSpeedEnabled: Bool = false, speed: Double) -> Data {
 
-    // Set the "enabled" and "speed" flags
-    let enabledFlag: UInt8 = isEnabled ? UInt8(bitPattern: -1) : 0
-    let speedFlag: UInt8 = isSpeedEnabled ? UInt8(bitPattern: -1) : 0
-
-    // 将 speed 限制在 0 到 16 之间
-    let clampedSpeed = min(max(speed, 0), 16)
-    // 计算 result
-    let result = (16 - clampedSpeed) * (16 - clampedSpeed) - 1
-    // 确保结果在 0 到 255 之间
-    let speedValue = UInt8(max(min(Int(result), 255), 0))
+    // Set the "enabled" and "speed" flags true255 /false0
+    let enabledFlag: UInt8 = isEnabled ? 255 : 0
+    let speedFlag: UInt8 = isSpeedEnabled ? 255 : 0
+ 
     // Create an 8-byte array to hold the command data
     var commandData = Data(count: 8)
 
@@ -57,12 +53,13 @@ class ColorUtil {
     commandData[6] = speedFlag
 
     // Set the calculated speed value
-    commandData[7] = speedValue
-
+    commandData[7] =  UInt8(Constants.maxSpeed - speed)
     // Return the prepared Data
     return commandData
   }
 
+    
+    
   static func argbToColor(argb: String) -> Color {
     // 清理字符串并转换为大写
     var cleanedArgbString = argb.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
@@ -82,6 +79,8 @@ class ColorUtil {
     return Color(cgColor: .init(srgbRed: red, green: green, blue: blue, alpha: alpha))
   }
 
+    
+    
   /// 构建灯光数据
   /// - Parameters:
   ///   - color: 颜色
@@ -89,7 +88,7 @@ class ColorUtil {
   ///   - isSpeedEnabled: 启用速度
   ///   - speed: 速度
   /// - Returns: data
-  static func buildColorData( _ color: Color, _ isEnabled: Bool = true, _ isSpeedEnabled: Bool = false, speed: Double) -> Data {
+  static func buildColor( _ color: Color, _ isEnabled: Bool = true, _ isSpeedEnabled: Bool = false, speed: Double) -> Data {
     let colorData = toRGBUInt8(color: color)
     return buildColorData(
       red: colorData.red,
@@ -105,7 +104,7 @@ class ColorUtil {
     
 
   static func buildTurnOff() -> Data {
-    return buildColorData(ColorUtil.argbToColor(argb: "#FF0092BD"), false, true, speed: 1)
+    return buildColor(ColorUtil.argbToColor(argb: "#FF0092BD"), false, true, speed: 1)
   }
 
 }

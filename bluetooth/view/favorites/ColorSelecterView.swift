@@ -11,7 +11,7 @@ import CoreBluetooth
 struct ColorSelecterView: View {
     @State private var selectedView: Int = 0
     @Binding var selectedColor: Color
-    @Binding var isGroupEnabled: Bool
+ 
     
     var body: some View {
         VStack {
@@ -23,16 +23,17 @@ struct ColorSelecterView: View {
             .padding(15)
 
             GeometryReader { geometry in
-                VStack {
-                    if selectedView == 0 {
-                        ColorGridView(selectedColor: $selectedColor)
-                            .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
-                           // .padding(.top,10) // 增加内边距避免内容贴边
-                            
-                    } else {
-                        ColorSlidersView(selectedColor: $selectedColor)
-                            .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
-                    }
+                switch selectedView {
+                case 0:
+                    ColorGridView(selectedColor: $selectedColor)
+                        .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
+                        .animation(.easeInOut,value: selectedView) // 添加渐变动画效果
+                case 1:
+                    ColorSlidersView(selectedColor: $selectedColor)
+                        .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
+                        .animation(.easeInOut,value: selectedView) // 添加渐变动画效果
+                default:
+                    EmptyView()
                 }
             }.padding(.top,10)
            
@@ -40,11 +41,12 @@ struct ColorSelecterView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top) // 使视图靠近上部
         .background(Color.gray.opacity(0.03)) // 添加背景颜色，以便区别内容区域
         .padding(.top,10)
+       
     }
 }
 
 struct ColorSelecterView_Previews: PreviewProvider {
     static var previews: some View {
-        ColorSelecterView(selectedColor: .constant(Color.white),isGroupEnabled: .constant(true))
+        ColorSelecterView(selectedColor: .constant(Color.white))
     }
 }
