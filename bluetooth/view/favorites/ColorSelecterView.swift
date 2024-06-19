@@ -20,7 +20,7 @@ struct ColorSelecterView: View {
                 Text("HSL").tag(1)
             }
             .pickerStyle(.segmented)
-            .padding(15)
+            .padding(.bottom,15)
 
             GeometryReader { geometry in
                 switch selectedView {

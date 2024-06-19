@@ -22,41 +22,42 @@ struct FavoritesView: View {
     private let handleInterval: Double = 0.02 // 20 毫秒
     
     var body: some View {
-        VStack(spacing: 5) {
-            HStack(spacing: 20) {
-                Toggle("启用", isOn: $isEnabled)
-                    .onChange(of: isEnabled) { newValue in
-                        handleEnable(isEnabled, selectedColor)
-                    }
-                
-                Toggle("闪灯", isOn: $isSpeedEnabled)
-                    .onChange(of: isSpeedEnabled) { newValue in
-                        handleColorChange(selectedColor)
-                    }
-                
-                Toggle("分组", isOn: $isGroupEnabled)
-                    .onChange(of: isGroupEnabled) { newValue in
-                        handleColorChange(selectedColor)
-                    }
-            }
-            .padding(.horizontal)
-            .padding(.top, 5)
-            
-            HStack {
-                Slider(value: $selectedSpeed, in: 0 ... Constants.maxSpeed, step: 1)
-                    .accentColor(Color.blue)
-                    .saturation(selectedSpeed / Constants.maxSpeed)
-                    .disabled(!isSpeedEnabled)
+        VStack {
+            Spacer()
+            VStack{
+                HStack(spacing: 20) {
+                    Toggle("启用", isOn: $isEnabled)
+                        .onChange(of: isEnabled) { newValue in
+                            handleEnable(isEnabled, selectedColor)
+                        }
                     
-                    .onChange(of: selectedSpeed) { newSpeed in
-                        handleColorChange(selectedColor)
-                    }
-                    .frame(minWidth: 0, maxWidth: .infinity) // 确保 Slider 占据尽可能多的空间
-                Text("速度 \(String(format: "%.0f", selectedSpeed))")
-                    .frame(width: 60, alignment: .leading) // 固定宽度以确保布局稳定
+                    Toggle("闪灯", isOn: $isSpeedEnabled)
+                        .onChange(of: isSpeedEnabled) { newValue in
+                            handleColorChange(selectedColor)
+                        }
+                    
+                    Toggle("分组", isOn: $isGroupEnabled)
+                        .onChange(of: isGroupEnabled) { newValue in
+                            handleColorChange(selectedColor)
+                        }
+                }
+                .padding(.horizontal)
+                //.padding(.top, 5)
+                
+                HStack {
+                    Slider(value: $selectedSpeed, in: 0 ... Constants.maxSpeed, step: 1)
+                        .accentColor(Color.blue)
+                        .disabled(!isSpeedEnabled)
+                        .onChange(of: selectedSpeed) { newSpeed in
+                            handleColorChange(selectedColor)
+                        }
+                        .frame(minWidth: 0, maxWidth: .infinity) // 确保 Slider 占据尽可能多的空间
+                    Text("速度 \(String(format: "%.0f", selectedSpeed))")
+                        .frame(width: 60, alignment: .leading) // 固定宽度以确保布局稳定
+                }
+                .padding(15)
             }
-            .padding(15)
-            
+            .background(Color.gray.opacity(0.03)) // 添加背景颜色，以便区别内容区域
             ColorSelecterView(selectedColor: $selectedColor)
         }
         .onChange(of: selectedColor) { newColor in
@@ -69,15 +70,15 @@ struct FavoritesView: View {
         let currentTime = Date()
         let timeInterval = currentTime.timeIntervalSince(lastColorChangeTime)
         //太快了数据量太大 会导致棒子响应迟滞
-        if timeInterval >= 0.02 {
+        
             lastColorChangeTime = currentTime
             if isEnabled {
                 Task{
-                        let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
-                       writeUtil.writeValueToAll(data)
+                    let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+                    writeUtil.writeValueToAll(data)
                 }
             }
-        }
+         
     }
     
     func handleEnable(_ enabled: Bool, _ selectColor: Color) {

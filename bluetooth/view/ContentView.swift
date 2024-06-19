@@ -14,7 +14,7 @@ struct ContentView: View {
         TabView{
             DeviceView( ).tabItem {
                 let cnt = bleManager.connectedPeripherals.count
-                Label("device(\( cnt >  0 ?cnt : 0))", systemImage: "list.bullet")
+                Label("device(\( cnt >  0 ? cnt : 0))", systemImage: "list.bullet")
             }
             FavoritesView( )
                 .tabItem {

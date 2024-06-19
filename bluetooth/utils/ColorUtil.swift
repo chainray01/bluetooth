@@ -30,7 +30,8 @@ class ColorUtil {
   ///   - isSpeedEnabled: 是否闪烁
   ///   - speed: 闪烁速度
   /// - Returns: [170, 161, 0, 146, 189, 255, 255, 20]
-  static func buildColorData( red: UInt8, green: UInt8, blue: UInt8, isEnabled: Bool = true, isSpeedEnabled: Bool = false, speed: Double) -> Data {
+  static func buildColorData( red: UInt8, green: UInt8, blue: UInt8, isEnabled: Bool = true,
+                              isSpeedEnabled: Bool = false, speed: Double) -> Data {
 
     // Set the "enabled" and "speed" flags true255 /false0
     let enabledFlag: UInt8 = isEnabled ? 255 : 0
@@ -88,7 +89,8 @@ class ColorUtil {
   ///   - isSpeedEnabled: 启用速度
   ///   - speed: 速度
   /// - Returns: data
-  static func buildColor( _ color: Color, _ isEnabled: Bool = true, _ isSpeedEnabled: Bool = false, speed: Double) -> Data {
+  static func buildColor( _ color: Color, _ isEnabled: Bool = true, _ isSpeedEnabled: Bool = false,
+                          speed: Double) -> Data {
     let colorData = toRGBUInt8(color: color)
     return buildColorData(
       red: colorData.red,
