@@ -30,19 +30,17 @@ struct FavoritesView: View {
                         .onChange(of: isEnabled) { newValue in
                             handleEnable(isEnabled, selectedColor)
                         }
-                    
                     Toggle("闪灯", isOn: $isSpeedEnabled)
                         .onChange(of: isSpeedEnabled) { newValue in
                             handleColorChange(selectedColor)
                         }
-                    
                     Toggle("分组", isOn: $isGroupEnabled)
                         .onChange(of: isGroupEnabled) { newValue in
                             handleColorChange(selectedColor)
                         }
                 }
                 .padding(.horizontal)
-                //.padding(.top, 5)
+                .padding(.top, 5)
                 
                 HStack {
                     Slider(value: $selectedSpeed, in: 0 ... Constants.maxSpeed, step: 1)

@@ -21,7 +21,7 @@ struct ColorSlidersView: View {
                     Slider(value: $hue, in: 0...1)
                         .accentColor(Color(hue: hue, saturation: saturation, brightness: brightness))
                         .frame(minWidth: 0, maxWidth: .infinity) // 确保 Slider 占据尽可能多的空间
-                    Text("H: \(hue, specifier: "%.2f")").foregroundStyle(Color.blue)
+                    Text("H: \(hue*360, specifier: "%.0f")").foregroundStyle(Color.blue)
                         .frame(width: 65, alignment: .leading) // 固定宽度以确保布局稳定
                 }
                 HStack{
