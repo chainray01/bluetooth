@@ -1,13 +1,12 @@
 //
 //  ColorSlidersView.swift
 //  bluetooth
-//
+// 颜色滑块视图，允许用户通过滑块调整颜色
 //  Created by Ray chai on 2024/6/11.
 //
 
 import SwiftUI
 
-/// 颜色滑块视图，允许用户通过滑块调整颜色
 struct ColorSlidersView: View {
     @Binding var selectedColor: Color
     @State private var hue: Double = 0.54

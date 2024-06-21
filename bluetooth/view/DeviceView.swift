@@ -1,7 +1,11 @@
-import SwiftUI
-import Foundation
+//
+//  DeviceView.swift
+//  bluetooth
+//
+//  Created by Ray chai on 2024/5/28.
+//
 import CoreBluetooth
-
+import SwiftUI
 struct DeviceView: View {
     @ObservedObject var bleManager = BLEManager.shared
     @State private var selectedPeripherals = Set<UUID>()

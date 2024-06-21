@@ -1,14 +1,13 @@
 //
 //  DeviceGroupView.swift
 //  bluetooth
-//
+// 设备分组视图，允许用户选择设备分组并为其选择颜色
 //  Created by Ray chai on 2024/6/12.
 //
 
 import SwiftUI
 import CoreBluetooth
 
-/// 设备分组视图，允许用户选择设备分组并为其选择颜色
 struct DeviceGroupView: View {
     @State private var selectedColors: [Color] = []
     @State private var showingColorGrid = false

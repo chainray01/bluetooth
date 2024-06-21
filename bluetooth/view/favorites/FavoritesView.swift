@@ -47,7 +47,7 @@ struct FavoritesView: View {
                         .accentColor(Color.blue)
                         .disabled(!isSpeedEnabled)
                         .onChange(of: selectedSpeed) { newSpeed in
-                            handleColorChange(selectedColor)
+                            handleSpeedChange(selectedColor)
                         }
                         .frame(minWidth: 0, maxWidth: .infinity) // 确保 Slider 占据尽可能多的空间
                     Text("速度 \(String(format: "%.0f", selectedSpeed))")
@@ -64,19 +64,28 @@ struct FavoritesView: View {
         .padding()
     }
     
+    func handleSpeedChange(_ selectColor: Color){
+        Task{
+            let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+            writeUtil.writeValueToAll(data)
+        }
+    }
+    
       func handleColorChange(_ selectColor: Color) {
         let currentTime = Date()
         let timeInterval = currentTime.timeIntervalSince(lastColorChangeTime)
-        //太快了数据量太大 会导致棒子响应迟滞
-        
-            lastColorChangeTime = currentTime
-            if isEnabled {
-                Task{
-                    let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
-                    writeUtil.writeValueToAll(data)
-                }
-            }
-         
+          //太快了数据量太大 会导致棒子响应迟滞
+          if(timeInterval<0.02){
+              return
+          }
+
+          lastColorChangeTime = currentTime
+          if isEnabled {
+              Task{
+                  let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+                  writeUtil.writeValueToAll(data)
+              }
+          }
     }
     
     func handleEnable(_ enabled: Bool, _ selectColor: Color) {

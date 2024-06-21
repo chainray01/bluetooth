@@ -5,7 +5,6 @@
 //  Created by Ray Chai on 2024/6/13.
 //
 
-import Foundation
 import CoreBluetooth
 class WriteDataUtil {
     static let shared = WriteDataUtil()

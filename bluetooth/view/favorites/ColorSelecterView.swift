@@ -5,7 +5,6 @@
 //  Created by Ray chai on 2024/5/28.
 //
 import SwiftUI
-import CoreBluetooth
 
 /// 颜色选择视图，包含网格视图和滑块视图
 struct ColorSelecterView: View {
