@@ -15,8 +15,7 @@ class ColorUtil {
     let red = components?[0] ?? 0
     let green = components?[1] ?? 0
     let blue = components?[2] ?? 0
-    return ( UInt8(red * 255), UInt8(green * 255), UInt8(blue * 255)
-    )
+    return ( UInt8(red * 255), UInt8(green * 255), UInt8(blue * 255))
   }
     
     
@@ -29,8 +28,8 @@ class ColorUtil {
   ///   - isSpeedEnabled: 是否闪烁
   ///   - speed: 闪烁速度
   /// - Returns: [170, 161, 0, 146, 189, 255, 255, 20]
-  static func buildColorData( red: UInt8, green: UInt8, blue: UInt8, isEnabled: Bool = true,
-                              isSpeedEnabled: Bool = false, speed: Double) -> Data {
+  static func buildColorData(_ red: UInt8,_ green: UInt8,_ blue: UInt8,_ isEnabled: Bool = true,
+                              _ isSpeedEnabled: Bool = false,_ speed: Double) -> Data {
 
     // Set the "enabled" and "speed" flags true255 /false0
     let enabledFlag: UInt8 = isEnabled ? 255 : 0
@@ -88,24 +87,16 @@ class ColorUtil {
   ///   - isSpeedEnabled: 启用速度
   ///   - speed: 速度
   /// - Returns: data
-  static func buildColor( _ color: Color, _ isEnabled: Bool = true, _ isSpeedEnabled: Bool = false,
-                          speed: Double) -> Data {
-    let colorData = toRGBUInt8(color: color)
-    return buildColorData(
-      red: colorData.red,
-      green: colorData.green,
-      blue: colorData.blue,
-      isEnabled: isEnabled,
-      isSpeedEnabled: isSpeedEnabled,
-      speed: speed
-    )
+  static func buildColor( _ color: Color, _ isEnabled: Bool = true, _ isSpeedEnabled: Bool = false,_ speed: Double) -> Data {
+    let data = toRGBUInt8(color: color)
+    return buildColorData(data.red, data.green, data.blue, isEnabled, isSpeedEnabled, speed)
   }
     
     
     
 
   static func buildTurnOff() -> Data {
-    return buildColor(ColorUtil.argbToColor(argb: "#FF0092BD"), false, true, speed: 1)
+      return buildColor(ColorUtil.argbToColor(argb: "#FF0092BD"), false, true, 1)
   }
 
 }

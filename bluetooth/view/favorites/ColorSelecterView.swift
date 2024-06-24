@@ -25,11 +25,12 @@ struct ColorSelecterView: View {
                 switch selectedView {
                 case 0:
                     ColorGridView(selectedColor: $selectedColor)
-                        .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
+                        .frame(width: geometry.size.width, height: geometry.size.width) 
                         .animation(.easeInOut,value: selectedView) // 添加渐变动画效果
                 case 1:
                     ColorSlidersView(selectedColor: $selectedColor)
-                        .frame(width: geometry.size.width, height: geometry.size.width) // 设置宽高比为1:1
+                        .frame(width: geometry.size.width, height: geometry.size.width) 
+                 
                         .animation(.easeInOut,value: selectedView) // 添加渐变动画效果
                 default:
                     EmptyView()
