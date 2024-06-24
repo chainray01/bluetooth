@@ -15,7 +15,7 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     var centralManager: CBCentralManager!
     static let shared = BLEManager()
 
-    private var scanTimer: Timer?
+    private var scanTimer: Timer? = nil
     private var sendWorkItems: [DispatchWorkItem] = []
     private var stopSendFlag = false
 

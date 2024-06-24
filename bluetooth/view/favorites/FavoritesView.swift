@@ -66,7 +66,7 @@ struct FavoritesView: View {
     
     func handleSpeedChange(_ selectColor: Color){
         Task{
-            let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+            let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, selectedSpeed)
             writeUtil.writeValueToAll(data)
         }
     }
@@ -82,7 +82,7 @@ struct FavoritesView: View {
           lastColorChangeTime = currentTime
           if isEnabled {
               Task{
-                  let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+                  let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, selectedSpeed)
                   writeUtil.writeValueToAll(data)
               }
           }
@@ -91,7 +91,7 @@ struct FavoritesView: View {
     func handleEnable(_ enabled: Bool, _ selectColor: Color) {
         if enabled {
             Task{ 
-                    let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, speed: selectedSpeed)
+                    let data = ColorUtil.buildColor(selectColor, isEnabled, isSpeedEnabled, selectedSpeed)
                     writeUtil.writeValueToAll(data)
             }
         } else {
