@@ -6,7 +6,7 @@
 //
 import CoreBluetooth
 
-class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
+final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     @Published var isScanning = false
     @Published var peripherals: [(peripheral: CBPeripheral, rssi: NSNumber, localName: String?, groupTag: String?)] = []
     @Published var connectedPeripherals: Set<CBPeripheral> = []
@@ -80,7 +80,8 @@ class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeriph
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         connectedPeripherals.insert(peripheral)
         peripheral.delegate = self
-        peripheral.discoverServices(nil)
+        //peripheral.discoverServices(nil)
+        peripheral.discoverServices([Constants.serviceUUID])
         print("Connected to peripheral: \(peripheral.identifier)")
     }
 

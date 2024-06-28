@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class ColorUtil {
+final class ColorUtil {
 
   //颜色转rbg分量
   static func toRGBUInt8(color: Color) -> (red: UInt8, green: UInt8, blue: UInt8) {

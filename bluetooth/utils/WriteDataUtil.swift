@@ -6,7 +6,7 @@
 //
 
 import CoreBluetooth
-class WriteDataUtil {
+final class WriteDataUtil {
     static let shared = WriteDataUtil()
     
     var bleManager = BLEManager.shared

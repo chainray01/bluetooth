@@ -8,7 +8,7 @@
 import Foundation
 import SQLite3
 
-class DatabaseManager {
+final class DatabaseManager {
     static let shared = DatabaseManager()
     private var db: OpaquePointer?
 
