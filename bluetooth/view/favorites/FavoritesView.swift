@@ -15,6 +15,7 @@ struct FavoritesView: View {
     @State private var selectedSpeed: Double = 10.0
     @State private var isGroupEnabled = false
     @ObservedObject var bleManager = BLEManager.shared
+    
     var writeUtil = WriteDataUtil.shared
     
     // 延时处理相关的变量

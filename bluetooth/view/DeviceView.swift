@@ -13,6 +13,7 @@ struct DeviceView: View {
     @State private var showConnected = false
     @State private var udname: String = ""
 
+ 
     var  writeData = WriteDataUtil.shared
     private var dataManager = DatabaseManager.shared
     
@@ -277,8 +278,11 @@ struct DeviceView: View {
             if let index = bleManager.peripherals.firstIndex(where: { $0.peripheral.identifier == selectedPeripheral }) {
                 bleManager.peripherals[index].groupTag = tag
             }
+            
         }
     }
+    
+ 
 }
 
 #Preview {

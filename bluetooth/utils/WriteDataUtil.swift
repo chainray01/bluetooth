@@ -6,7 +6,9 @@
 //
 
 import CoreBluetooth
+
 final class WriteDataUtil {
+    
     static let shared = WriteDataUtil()
     
     var bleManager = BLEManager.shared
@@ -17,9 +19,7 @@ final class WriteDataUtil {
     func stopSending() {
         stopSendFlag = true
         sendQueue.suspend()
-        for workItem in sendWorkItems {
-            workItem.cancel()
-        }
+        sendWorkItems.forEach { $0.cancel() }
         sendWorkItems.removeAll()
         sendQueue.resume()
     }
@@ -31,34 +31,28 @@ final class WriteDataUtil {
         let dispatchGroup = DispatchGroup()
         
         bleManager.connectedPeripherals.forEach { peripheral in
-            if let characteristics = bleManager.characteristics[peripheral],
-               let characteristic = characteristics.first(where: { $0.uuid == Constants.characteristicUUID }) {
-                
-                dispatchGroup.enter()
-                let workItem = DispatchWorkItem { [weak self] in
-                    guard let self = self else {
-                        dispatchGroup.leave()
-                        return
-                    }
-                    
-                    if self.stopSendFlag {
-                        dispatchGroup.leave()
-                        return
-                    }
-                    
-                    bleManager.writeValue(data, for: characteristic, on: peripheral)
-                    // 再次检查 stopSendFlag，以便在长时间操作后响应停止信号
-                     if self.stopSendFlag {
-                         dispatchGroup.leave()
-                         return // 提前退出
-                     }
-                    
+            guard let characteristics = bleManager.characteristics[peripheral],
+                  let characteristic = characteristics.first(where: { $0.uuid == Constants.characteristicUUID }) else { return }
+            
+            dispatchGroup.enter()
+            let workItem = DispatchWorkItem { [weak self] in
+                guard let self = self, !self.stopSendFlag else {
                     dispatchGroup.leave()
+                    return
                 }
                 
-                self.sendWorkItems.append(workItem)
-                self.sendQueue.async(execute: workItem)
+                self.bleManager.writeValue(data, for: characteristic, on: peripheral)
+                
+                if self.stopSendFlag {
+                    dispatchGroup.leave()
+                    return
+                }
+                
+                dispatchGroup.leave()
             }
+            
+            self.sendWorkItems.append(workItem)
+            self.sendQueue.async(execute: workItem)
         }
         
         notifyCompletion(for: dispatchGroup)
@@ -67,23 +61,20 @@ final class WriteDataUtil {
     private func notifyCompletion(for dispatchGroup: DispatchGroup) {
         dispatchGroup.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
-          //  print("stopSendFlag: \(self.stopSendFlag)")
-          
             // UI updates or other main thread tasks go here
         }
     }
     
-    func writeValueTo(_ data: Data,devices:[CBPeripheral]) {
-        
+    func writeValueTo(_ data: Data, devices: [CBPeripheral]) {
+        // Implement the logic for writing data to specific devices if needed
     }
-    
     
     func disconnectAll() {
         stopSending()
         let data = ColorUtil.buildTurnOff()
         writeValueToAll(data)
         
-        for peripheral in bleManager.connectedPeripherals {
+        bleManager.connectedPeripherals.forEach { peripheral in
             bleManager.centralManager.cancelPeripheralConnection(peripheral)
         }
         
@@ -94,3 +85,4 @@ final class WriteDataUtil {
         print("Disconnected all peripherals")
     }
 }
+

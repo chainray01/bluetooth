@@ -135,7 +135,7 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     }
 
 
-
+    
     func writeValue(_ data: Data, for characteristic: CBCharacteristic, on peripheral: CBPeripheral) {
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
     }
