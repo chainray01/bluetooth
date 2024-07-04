@@ -12,11 +12,11 @@ struct ContentView: View {
     @ObservedObject var bleManager = BLEManager.shared
     var body: some View {
         TabView{
-            DeviceView( ).tabItem {
+            DeviceView().tabItem {
                 let cnt = bleManager.connectedPeripherals.count
                 Label("device(\( cnt >  0 ? cnt : 0))", systemImage: "list.bullet")
             }
-            FavoritesView( )
+            FavoritesView()
                 .tabItem {
                     Label("Favorites", systemImage: "star")
             }
