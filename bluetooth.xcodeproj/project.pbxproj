@@ -8,9 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		90011F302C19DDCE007D072B /* DeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90011F2F2C19DDCE007D072B /* DeviceView.swift */; };
-		9001BBEF2C1DBCF200E2CBD1 /* AESCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9001BBEE2C1DBCF200E2CBD1 /* AESCipher.swift */; };
 		9001BBF12C1DBDCB00E2CBD1 /* PointerDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9001BBF02C1DBDCB00E2CBD1 /* PointerDecoder.swift */; };
-		9001BBF32C1DC30600E2CBD1 /* DataHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9001BBF22C1DC30600E2CBD1 /* DataHandler.swift */; };
 		901F59282C05CF3600CCD859 /* BluetoothApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901F59272C05CF3600CCD859 /* BluetoothApp.swift */; };
 		901F592A2C05CF3600CCD859 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 901F59292C05CF3600CCD859 /* ContentView.swift */; };
 		901F592C2C05CF3600CCD859 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 901F592B2C05CF3600CCD859 /* Assets.xcassets */; };
@@ -44,9 +42,7 @@
 
 /* Begin PBXFileReference section */
 		90011F2F2C19DDCE007D072B /* DeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceView.swift; sourceTree = "<group>"; };
-		9001BBEE2C1DBCF200E2CBD1 /* AESCipher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AESCipher.swift; sourceTree = "<group>"; };
 		9001BBF02C1DBDCB00E2CBD1 /* PointerDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointerDecoder.swift; sourceTree = "<group>"; };
-		9001BBF22C1DC30600E2CBD1 /* DataHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataHandler.swift; sourceTree = "<group>"; };
 		901F59242C05CF3600CCD859 /* bluetooth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bluetooth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		901F59272C05CF3600CCD859 /* BluetoothApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothApp.swift; sourceTree = "<group>"; };
 		901F59292C05CF3600CCD859 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -85,9 +81,7 @@
 				9075576C2C193F0400533D3C /* LightDataService.swift */,
 				90492FCF2C14409700DB074C /* ColorUtil.swift */,
 				9061DAD72C1B2AF80032F735 /* WriteDataUtil.swift */,
-				9001BBEE2C1DBCF200E2CBD1 /* AESCipher.swift */,
 				9001BBF02C1DBDCB00E2CBD1 /* PointerDecoder.swift */,
-				9001BBF22C1DC30600E2CBD1 /* DataHandler.swift */,
 				9051D01E2C21D88200CD6F79 /* Constants.swift */,
 			);
 			path = utils;
@@ -246,10 +240,8 @@
 				90492FCC2C143D2C00DB074C /* FavoritesView.swift in Sources */,
 				9051D01F2C21D88200CD6F79 /* Constants.swift in Sources */,
 				90BF1DB62C1897BA0097BA82 /* ColorGridView.swift in Sources */,
-				9001BBEF2C1DBCF200E2CBD1 /* AESCipher.swift in Sources */,
 				9068F9B52C1ACA0800646F00 /* DatabaseManager.swift in Sources */,
 				90F7F1462C34DCA200F82EF3 /* AudioMonitor.swift in Sources */,
-				9001BBF32C1DC30600E2CBD1 /* DataHandler.swift in Sources */,
 				90011F302C19DDCE007D072B /* DeviceView.swift in Sources */,
 				9001BBF12C1DBDCB00E2CBD1 /* PointerDecoder.swift in Sources */,
 				90BF1DB42C1896D00097BA82 /* ColorSlidersView.swift in Sources */,

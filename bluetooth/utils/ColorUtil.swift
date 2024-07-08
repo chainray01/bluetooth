@@ -11,7 +11,7 @@ import Combine
 import CoreBluetooth
 import SwiftUI
 
-final class ColorUtil {
+struct ColorUtil {
 
   //颜色转rbg分量
   static func toRGBUInt8(color: Color) -> (red: UInt8, green: UInt8, blue: UInt8) {
@@ -89,8 +89,7 @@ final class ColorUtil {
   ///   - speed: 速度
   /// - Returns: data
   static func buildColor(
-    _ color: Color, _ isEnabled: Bool = true, _ isSpeedEnabled: Bool = false, _ speed: Double
-  ) -> Data {
+    _ color: Color, _ isEnabled: Bool = true, _ isSpeedEnabled: Bool = false, _ speed: Double) -> Data {
     let data = toRGBUInt8(color: color)
     return buildColorData(data.red, data.green, data.blue, isEnabled, isSpeedEnabled, speed)
   }
@@ -142,27 +141,27 @@ final class ColorUtil {
   }
 
   static func processFrequencyBands(frequencyBands: [Float]) -> (Float, Float) {
-    let sampleRate = 44100  // Adjust based on your actual sample rate
-    let lowFrequencyThreshold = sampleRate / 4  // up to one-fourth of the sample rate
-    let highFrequencyThreshold = sampleRate / 2  // from one-fourth to half of the sample rate
+      let sampleRate = 44100 // Adjust based on your actual sample rate
+             let lowFrequencyThreshold = sampleRate / 8 // Adjust to include more frequencies
+             let highFrequencyThreshold = sampleRate / 2 // Keep up to half of the sample rate
 
-    let lowFrequencyRange = 0..<lowFrequencyThreshold
-    let highFrequencyRange = lowFrequencyThreshold..<highFrequencyThreshold
+             let lowFrequencyRange = 0..<lowFrequencyThreshold
+             let highFrequencyRange = lowFrequencyThreshold..<highFrequencyThreshold
 
-    let lowFrequencyMagnitudes = frequencyBands.indices.filter {
-      $0 * sampleRate / frequencyBands.count >= lowFrequencyRange.lowerBound
-        && $0 * sampleRate / frequencyBands.count < lowFrequencyRange.upperBound
-    }.map { frequencyBands[$0] }
+             let lowFrequencyMagnitudes = frequencyBands.indices.filter {
+                 $0 * sampleRate / frequencyBands.count >= lowFrequencyRange.lowerBound &&
+                 $0 * sampleRate / frequencyBands.count < lowFrequencyRange.upperBound
+             }.map { frequencyBands[$0] }
 
-    let highFrequencyMagnitudes = frequencyBands.indices.filter {
-      $0 * sampleRate / frequencyBands.count >= highFrequencyRange.lowerBound
-        && $0 * sampleRate / frequencyBands.count < highFrequencyRange.upperBound
-    }.map { frequencyBands[$0] }
+             let highFrequencyMagnitudes = frequencyBands.indices.filter {
+                 $0 * sampleRate / frequencyBands.count >= highFrequencyRange.lowerBound &&
+                 $0 * sampleRate / frequencyBands.count < highFrequencyRange.upperBound
+             }.map { frequencyBands[$0] }
 
-    let lowFrequency = safeAverage(lowFrequencyMagnitudes)
-    let highFrequency = safeAverage(highFrequencyMagnitudes)
+             let lowFrequency = safeAverage(lowFrequencyMagnitudes)
+             let highFrequency = safeAverage(highFrequencyMagnitudes)
 
-    return (lowFrequency, highFrequency)
+             return (lowFrequency, highFrequency)
   }
 
   static func mapFrequencyToHue(lowFrequency: Float, highFrequency: Float) -> Double {
@@ -178,7 +177,7 @@ final class ColorUtil {
   }
 
   static func shouldFlashBasedOnAmplitude(amplitude: Float) -> Bool {
-    return amplitude > 0.5
+      return amplitude > 0.7
   }
   static func denoiseAudio(data: [Float]) -> [Float] {
     // Simple noise gate algorithm
