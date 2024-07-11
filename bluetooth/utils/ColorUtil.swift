@@ -59,6 +59,8 @@ struct ColorUtil {
     // Set the calculated speed value
     commandData[7] = UInt8(Constants.maxSpeed - speed)
     // Return the prepared Data
+      
+      
     return commandData
   }
 
