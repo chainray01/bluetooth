@@ -80,28 +80,12 @@ void led_strip_set_color(uint8_t red, uint8_t green, uint8_t blue, bool is_enabl
     // Calculate delay based on speed (0 to 255 mapped to a reasonable delay range)
     uint32_t delay_ms = (255 - speed) * 5; // Adjust this multiplier for desired speed range
 
-    if (speed == 0) {
-        // Blink effect: LEDs off
-        nrf_gpio_pin_clear(APA102C_CLK_PIN);
-        for (int led = 0; led < NUM_LEDS; led++) {
-            // Send LED frame (brightness only, no color)
-            for (int i = 0; i < 8; i++) {
-                nrf_gpio_pin_write(APA102C_DATA_PIN, 0x00); // Minimum brightness
-                nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                nrf_gpio_pin_set(APA102C_CLK_PIN);
-            }
-        }
-        nrf_gpio_pin_set(APA102C_CLK_PIN);
-        return;
-    }
-
-    // Breathing effect (gradually increase and decrease brightness)
     if (is_speed_enabled) {
+        // Breathing effect (gradually increase and decrease brightness)
         uint8_t brightness = 0;
         int8_t dir = 1; // Direction: 1 for increasing, -1 for decreasing
 
-        while (is_speed_enabled) {
-            // Increase or decrease brightness
+        for (int cycle = 0; cycle < 2; cycle++) { // Two cycles for demo
             brightness += dir;
 
             // Reverse direction at brightness extremes
@@ -214,7 +198,7 @@ static void on_ble_write(ble_evt_t const * p_ble_evt) {
     }
 }
 
-// BLE event handler
+// Function to handle BLE events
 static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
     switch (p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
@@ -364,30 +348,24 @@ static void cust_service_init(void) {
     memset(&char_md, 0, sizeof(char_md));
     char_md.char_props.write = 1;
     char_md.char_props.write_wo_resp = 1;
-    char_md.p_char_user_desc = NULL;
-    char_md.p_char_pf = NULL;
-    char_md.p_user_desc_md = NULL;
-    char_md.p_cccd_md = NULL;
-    char_md.p_sccd_md = NULL;
+
+    ble_gatts_attr_md_t attr_md;
+    memset(&attr_md, 0, sizeof(attr_md));
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
+    attr_md.vloc = BLE_GATTS_VLOC_STACK;
 
     ble_uuid_t char_uuid;
     char_uuid.type = m_cust_service.uuid_type;
     char_uuid.uuid = CUSTOM_CHAR_UUID;
 
-    ble_gatts_attr_md_t attr_md;
-    memset(&attr_md, 0, sizeof(attr_md));
-    attr_md.vloc = BLE_GATTS_VLOC_STACK;
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
-
-    ble_gatts_attr_t attr_char_value;
+    ble_gatts_attr_t    attr_char_value;
     memset(&attr_char_value, 0, sizeof(attr_char_value));
-    attr_char_value.p_uuid = &char_uuid;
+    attr_char_value.p_uuid    = &char_uuid;
     attr_char_value.p_attr_md = &attr_md;
-    attr_char_value.init_len = sizeof(uint8_t) * 8;
+    attr_char_value.init_len  = sizeof(uint8_t);
     attr_char_value.init_offs = 0;
-    attr_char_value.max_len = sizeof(uint8_t) * 8;
-    attr_char_value.p_value = NULL;
+    attr_char_value.max_len   = 8; // Expecting 8 bytes for this characteristic
 
     err_code = sd_ble_gatts_characteristic_add(m_cust_service.service_handle, &char_md, &attr_char_value, &m_cust_service.char_handles);
     APP_ERROR_CHECK(err_code);
@@ -397,10 +375,20 @@ static void cust_service_init(void) {
 int main(void) {
     // Initialize BLE stack
     ble_stack_init();
+
+    // Initialize GAP parameters
     gap_params_init();
+
+    // Initialize GATT
     gatt_init();
+
+    // Initialize advertising
     advertising_init();
+
+    // Initialize connection parameters
     conn_params_init();
+
+    // Initialize power management
     power_management_init();
 
     // Initialize LED strip
@@ -413,7 +401,8 @@ int main(void) {
     advertising_start();
 
     // Enter main loop
-    for (;;) {
+    while (true) {
+        // Power management handling
         nrf_pwr_mgmt_run();
     }
 }
