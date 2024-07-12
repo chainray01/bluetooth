@@ -220,11 +220,8 @@ static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
 
 // Function to initialize BLE stack
 static void ble_stack_init(void) {
-    ret_code_t err_code = nrf_sdh_enable_request();
-    APP_ERROR_CHECK(err_code);
-
-    // Configure BLE stack using default settings
-    ble_cfg_t ble_cfg;
+    ret_code_t err_code;
+    nrf_sdh_ble_cfg_t ble_cfg;
     memset(&ble_cfg, 0x00, sizeof(ble_cfg));
 
     // Configure the connection count and the number of UUIDs
@@ -347,7 +344,7 @@ static void cust_service_init(void) {
     ble_gatts_char_md_t char_md;
     memset(&char_md, 0, sizeof(char_md));
     char_md.char_props.write = 1;
-    char_md.char_props.write_wo_resp = 1;
+    char_md.char_props.write_wo_resp = 0; // write with response
 
     ble_gatts_attr_md_t attr_md;
     memset(&attr_md, 0, sizeof(attr_md));
