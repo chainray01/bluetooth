@@ -26,7 +26,6 @@
 #include "boards.h"
 #include "bsp_btn_ble.h"
 #include "nrf_pwr_mgmt.h"
-#include "ble_srv_common.h"
 
 // BLE stack parameters
 #define APP_BLE_CONN_CFG_TAG            1
@@ -86,47 +85,49 @@ void led_strip_set_color(uint8_t red, uint8_t green, uint8_t blue, bool is_enabl
         int8_t dir = 1; // Direction: 1 for increasing, -1 for decreasing
 
         for (int cycle = 0; cycle < 2; cycle++) { // Two cycles for demo
-            brightness += dir;
+            while (brightness != 0 && brightness != 255) {
+                brightness += dir;
 
-            // Reverse direction at brightness extremes
-            if (brightness == 0 || brightness == 255) {
-                dir = -dir;
+                // Reverse direction at brightness extremes
+                if (brightness == 0 || brightness == 255) {
+                    dir = -dir;
+                }
+
+                // Send LED frames with current brightness
+                nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                for (int led = 0; led < NUM_LEDS; led++) {
+                    // Global brightness
+                    for (int i = 0; i < 8; i++) {
+                        nrf_gpio_pin_write(APA102C_DATA_PIN, (brightness >> (7 - i)) & 0x01);
+                        nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                        nrf_gpio_pin_set(APA102C_CLK_PIN);
+                    }
+
+                    // Red
+                    for (int i = 0; i < 8; i++) {
+                        nrf_gpio_pin_write(APA102C_DATA_PIN, (red >> (7 - i)) & 0x01);
+                        nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                        nrf_gpio_pin_set(APA102C_CLK_PIN);
+                    }
+
+                    // Green
+                    for (int i = 0; i < 8; i++) {
+                        nrf_gpio_pin_write(APA102C_DATA_PIN, (green >> (7 - i)) & 0x01);
+                        nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                        nrf_gpio_pin_set(APA102C_CLK_PIN);
+                    }
+
+                    // Blue
+                    for (int i = 0; i < 8; i++) {
+                        nrf_gpio_pin_write(APA102C_DATA_PIN, (blue >> (7 - i)) & 0x01);
+                        nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                        nrf_gpio_pin_set(APA102C_CLK_PIN);
+                    }
+                }
+
+                // Delay between brightness changes
+                nrf_delay_ms(delay_ms);
             }
-
-            // Send LED frames with current brightness
-            nrf_gpio_pin_clear(APA102C_CLK_PIN);
-            for (int led = 0; led < NUM_LEDS; led++) {
-                // Global brightness
-                for (int i = 0; i < 8; i++) {
-                    nrf_gpio_pin_write(APA102C_DATA_PIN, (brightness >> (7 - i)) & 0x01);
-                    nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                    nrf_gpio_pin_set(APA102C_CLK_PIN);
-                }
-
-                // Red
-                for (int i = 0; i < 8; i++) {
-                    nrf_gpio_pin_write(APA102C_DATA_PIN, (red >> (7 - i)) & 0x01);
-                    nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                    nrf_gpio_pin_set(APA102C_CLK_PIN);
-                }
-
-                // Green
-                for (int i = 0; i < 8; i++) {
-                    nrf_gpio_pin_write(APA102C_DATA_PIN, (green >> (7 - i)) & 0x01);
-                    nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                    nrf_gpio_pin_set(APA102C_CLK_PIN);
-                }
-
-                // Blue
-                for (int i = 0; i < 8; i++) {
-                    nrf_gpio_pin_write(APA102C_DATA_PIN, (blue >> (7 - i)) & 0x01);
-                    nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                    nrf_gpio_pin_set(APA102C_CLK_PIN);
-                }
-            }
-
-            // Delay between brightness changes
-            nrf_delay_ms(delay_ms);
         }
     } else {
         // Static color
@@ -152,12 +153,14 @@ void led_strip_set_color(uint8_t red, uint8_t green, uint8_t blue, bool is_enabl
                 nrf_gpio_pin_write(APA102C_DATA_PIN, (red >> (7 - i)) & 0x01);
                 nrf_gpio_pin_set(APA102C_CLK_PIN);
             }
+
             // Green
             for (int i = 0; i < 8; i++) {
                 nrf_gpio_pin_clear(APA102C_CLK_PIN);
                 nrf_gpio_pin_write(APA102C_DATA_PIN, (green >> (7 - i)) & 0x01);
                 nrf_gpio_pin_set(APA102C_CLK_PIN);
             }
+
             // Blue
             for (int i = 0; i < 8; i++) {
                 nrf_gpio_pin_clear(APA102C_CLK_PIN);
@@ -175,30 +178,29 @@ void led_strip_set_color(uint8_t red, uint8_t green, uint8_t blue, bool is_enabl
     }
 }
 
-// Function to handle received BLE data
+// Callback function for BLE write events
 static void on_ble_write(ble_evt_t const * p_ble_evt) {
     ble_gatts_evt_write_t const * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
 
-    // Check if the write is to our custom characteristic
+    // Check if the write is to the custom characteristic
     if (p_evt_write->handle == m_cust_service.char_handles.value_handle) {
+        // Expecting 8 bytes of data
         if (p_evt_write->len == 8) {
-            uint8_t cmd_prefix1 = p_evt_write->data[0];
-            uint8_t cmd_prefix2 = p_evt_write->data[1];
-            uint8_t red = p_evt_write->data[2];
-            uint8_t green = p_evt_write->data[3];
-            uint8_t blue = p_evt_write->data[4];
-            bool is_enabled = p_evt_write->data[5];
-            bool is_speed_enabled = p_evt_write->data[6];
-            uint8_t speed = p_evt_write->data[7];
+            uint8_t *data = p_evt_write->data;
+            uint8_t red = data[2];
+            uint8_t green = data[3];
+            uint8_t blue = data[4];
+            bool is_enabled = data[5];
+            bool is_speed_enabled = data[6];
+            uint8_t speed = data[7];
 
-            if (cmd_prefix1 == 170 && cmd_prefix2 == 161) {
-                led_strip_set_color(red, green, blue, is_enabled, is_speed_enabled, speed);
-            }
+            // Set LED strip color and effects based on received data
+            led_strip_set_color(red, green, blue, is_enabled, is_speed_enabled, speed);
         }
     }
 }
 
-// Function to handle BLE events
+// BLE event handler
 static void ble_evt_handler(ble_evt_t const * p_ble_evt, void * p_context) {
     switch (p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
@@ -388,18 +390,17 @@ int main(void) {
     // Initialize power management
     power_management_init();
 
-    // Initialize LED strip
-    led_strip_init();
-
     // Initialize custom service
     cust_service_init();
+
+    // Initialize LED strip
+    led_strip_init();
 
     // Start advertising
     advertising_start();
 
     // Enter main loop
-    while (true) {
-        // Power management handling
+    for (;;) {
         nrf_pwr_mgmt_run();
     }
 }
