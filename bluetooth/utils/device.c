@@ -26,6 +26,11 @@
 #include "boards.h"
 #include "bsp_btn_ble.h"
 #include "nrf_pwr_mgmt.h"
+#include "nrf_dfu.h"
+#include "nrf_dfu_settings.h"
+#include "nrf_dfu_transport.h"
+#include "nrf_dfu_utils.h"
+#include "nrf_dfu_req_handler.h"
 
 // BLE stack parameters
 #define APP_BLE_CONN_CFG_TAG            1
@@ -84,50 +89,48 @@ void led_strip_set_color(uint8_t red, uint8_t green, uint8_t blue, bool is_enabl
         uint8_t brightness = 0;
         int8_t dir = 1; // Direction: 1 for increasing, -1 for decreasing
 
-        for (int cycle = 0; cycle < 2; cycle++) { // Two cycles for demo
-            while (brightness != 0 && brightness != 255) {
-                brightness += dir;
+        while (true) {
+            brightness += dir;
 
-                // Reverse direction at brightness extremes
-                if (brightness == 0 || brightness == 255) {
-                    dir = -dir;
-                }
-
-                // Send LED frames with current brightness
-                nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                for (int led = 0; led < NUM_LEDS; led++) {
-                    // Global brightness
-                    for (int i = 0; i < 8; i++) {
-                        nrf_gpio_pin_write(APA102C_DATA_PIN, (brightness >> (7 - i)) & 0x01);
-                        nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                        nrf_gpio_pin_set(APA102C_CLK_PIN);
-                    }
-
-                    // Red
-                    for (int i = 0; i < 8; i++) {
-                        nrf_gpio_pin_write(APA102C_DATA_PIN, (red >> (7 - i)) & 0x01);
-                        nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                        nrf_gpio_pin_set(APA102C_CLK_PIN);
-                    }
-
-                    // Green
-                    for (int i = 0; i < 8; i++) {
-                        nrf_gpio_pin_write(APA102C_DATA_PIN, (green >> (7 - i)) & 0x01);
-                        nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                        nrf_gpio_pin_set(APA102C_CLK_PIN);
-                    }
-
-                    // Blue
-                    for (int i = 0; i < 8; i++) {
-                        nrf_gpio_pin_write(APA102C_DATA_PIN, (blue >> (7 - i)) & 0x01);
-                        nrf_gpio_pin_clear(APA102C_CLK_PIN);
-                        nrf_gpio_pin_set(APA102C_CLK_PIN);
-                    }
-                }
-
-                // Delay between brightness changes
-                nrf_delay_ms(delay_ms);
+            // Reverse direction at brightness extremes
+            if (brightness == 0 || brightness == 255) {
+                dir = -dir;
             }
+
+            // Send LED frames with current brightness
+            nrf_gpio_pin_clear(APA102C_CLK_PIN);
+            for (int led = 0; led < NUM_LEDS; led++) {
+                // Global brightness
+                for (int i = 0; i < 8; i++) {
+                    nrf_gpio_pin_write(APA102C_DATA_PIN, (brightness >> (7 - i)) & 0x01);
+                    nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                    nrf_gpio_pin_set(APA102C_CLK_PIN);
+                }
+
+                // Red
+                for (int i = 0; i < 8; i++) {
+                    nrf_gpio_pin_write(APA102C_DATA_PIN, (red >> (7 - i)) & 0x01);
+                    nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                    nrf_gpio_pin_set(APA102C_CLK_PIN);
+                }
+
+                // Green
+                for (int i = 0; i < 8; i++) {
+                    nrf_gpio_pin_write(APA102C_DATA_PIN, (green >> (7 - i)) & 0x01);
+                    nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                    nrf_gpio_pin_set(APA102C_CLK_PIN);
+                }
+
+                // Blue
+                for (int i = 0; i < 8; i++) {
+                    nrf_gpio_pin_write(APA102C_DATA_PIN, (blue >> (7 - i)) & 0x01);
+                    nrf_gpio_pin_clear(APA102C_CLK_PIN);
+                    nrf_gpio_pin_set(APA102C_CLK_PIN);
+                }
+            }
+
+            // Delay between brightness changes
+            nrf_delay_ms(delay_ms);
         }
     } else {
         // Static color
@@ -390,17 +393,23 @@ int main(void) {
     // Initialize power management
     power_management_init();
 
+    // Initialize LED strip
+    led_strip_init();
+
     // Initialize custom service
     cust_service_init();
 
-    // Initialize LED strip
-    led_strip_init();
+    // Initialize DFU service
+    ble_dfu_init();
+
+    // Check if we need to enter DFU mode
+    check_for_dfu_mode();
 
     // Start advertising
     advertising_start();
 
     // Enter main loop
-    for (;;) {
+    while (true) {
         nrf_pwr_mgmt_run();
     }
 }

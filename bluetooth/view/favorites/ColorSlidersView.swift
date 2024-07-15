@@ -137,8 +137,7 @@ struct ColorSlidersView: View {
     }
 }
 
-struct ColorSlidersView_Previews: PreviewProvider {
-    static var previews: some View {
-        ColorSlidersView(selectedColor: .constant(Color.white))
-    }
+ 
+#Preview {
+    ColorSlidersView(selectedColor: .constant(Color.white))
 }

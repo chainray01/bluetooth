@@ -45,8 +45,7 @@ struct ColorSelecterView: View {
     }
 }
 
-struct ColorSelecterView_Previews: PreviewProvider {
-    static var previews: some View {
-        ColorSelecterView(selectedColor: .constant(Color.white))
-    }
+ 
+#Preview {
+    ColorSelecterView(selectedColor: .constant(Color.white))
 }

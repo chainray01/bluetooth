@@ -94,9 +94,7 @@ struct ColorGridView: View {
         return colors[row][col]
     }
 }
-
-struct ColorGridView_Previews: PreviewProvider {
-    static var previews: some View {
-        ColorGridView(selectedColor: .constant(Color.white))
-    }
+ 
+#Preview {
+    ColorGridView(selectedColor: .constant(Color.white))
 }
