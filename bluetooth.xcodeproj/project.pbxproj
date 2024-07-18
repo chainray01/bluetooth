@@ -23,6 +23,7 @@
 		90999DD62C11FA6800644AFC /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90999DD52C11FA6800644AFC /* BLEManager.swift */; };
 		90BF1DB42C1896D00097BA82 /* ColorSlidersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BF1DB32C1896D00097BA82 /* ColorSlidersView.swift */; };
 		90BF1DB62C1897BA0097BA82 /* ColorGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BF1DB52C1897BA0097BA82 /* ColorGridView.swift */; };
+		90C57FB32C48B488002F7299 /* ColorCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C57FB22C48B488002F7299 /* ColorCommand.swift */; };
 		90F7F1462C34DCA200F82EF3 /* AudioMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90F7F1452C34DCA200F82EF3 /* AudioMonitor.swift */; };
 /* End PBXBuildFile section */
 
@@ -58,6 +59,7 @@
 		90999DD72C12000E00644AFC /* bluetooth.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = bluetooth.entitlements; sourceTree = "<group>"; };
 		90BF1DB32C1896D00097BA82 /* ColorSlidersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSlidersView.swift; sourceTree = "<group>"; };
 		90BF1DB52C1897BA0097BA82 /* ColorGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorGridView.swift; sourceTree = "<group>"; };
+		90C57FB22C48B488002F7299 /* ColorCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCommand.swift; sourceTree = "<group>"; };
 		90DE94A82C104AB4007D2C0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		90F7F1452C34DCA200F82EF3 /* AudioMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -81,6 +83,7 @@
 				9061DAD72C1B2AF80032F735 /* WriteDataUtil.swift */,
 				9001BBF02C1DBDCB00E2CBD1 /* PointerDecoder.swift */,
 				9051D01E2C21D88200CD6F79 /* Constants.swift */,
+				90C57FB22C48B488002F7299 /* ColorCommand.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -246,6 +249,7 @@
 				9061DAD82C1B2AF80032F735 /* WriteDataUtil.swift in Sources */,
 				901F592A2C05CF3600CCD859 /* ContentView.swift in Sources */,
 				9075576D2C193F0400533D3C /* LightDataService.swift in Sources */,
+				90C57FB32C48B488002F7299 /* ColorCommand.swift in Sources */,
 				90999DD62C11FA6800644AFC /* BLEManager.swift in Sources */,
 				90492FD02C14409700DB074C /* ColorUtil.swift in Sources */,
 				90492FCE2C143ED800DB074C /* ColorSelecterView.swift in Sources */,

@@ -41,10 +41,7 @@ struct FavoritesView: View {
             .onChange(of: isGroupEnabled) { _ in
               handleColorChange(selectedColor)
             }
-//          Toggle("律动", isOn: $isMonitoring)
-//            .onChange(of: isMonitoring) { newValue in
-//              handleMonitoring(newValue)
-//            }
+ 
         }
         .padding(.horizontal)
         .padding(.top, 5)
@@ -99,35 +96,10 @@ struct FavoritesView: View {
     }
   }
 
-  func handleMonitoring(_ monitoring: Bool) {
-    if monitoring {
-      audioMonitor.startMonitoring()
-      audioMonitor.objectWillChange.sink { _ in
-          let rawAudioData = audioMonitor.audioData
-                          let denoisedAudioData = ColorUtil.denoiseAudio(data: rawAudioData)
-                          let frequencyBands = ColorUtil.performFFT(data: denoisedAudioData)
-                          let smoothedBands = ColorUtil.movingAverage(values: frequencyBands, windowSize: 5)
-                          let (lowFrequency, highFrequency) = ColorUtil.processFrequencyBands(frequencyBands: smoothedBands)
-
-                          let newHue = ColorUtil.mapFrequencyToHue(lowFrequency: lowFrequency, highFrequency: highFrequency)
-                          let newBrightness = ColorUtil.mapAmplitudeToBrightness(amplitude: highFrequency)
-                          
-                          print("New Hue: \(newHue), New Brightness: \(newBrightness)")
-
-                          selectedColor = Color(hue: newHue, saturation: 0.5, brightness: newBrightness)
-                          isSpeedEnabled = ColorUtil.shouldFlashBasedOnAmplitude(amplitude: highFrequency)
-                          
-                          handleColorChange(selectedColor) // Update color with new hue and flashing state
-      }.store(in: &cancellables)
-    } else {
-      audioMonitor.stopMonitoring()
-      cancellables.removeAll()
-    }
-  }
 
   private func sendColorData(_ color: Color) {
     Task {
-      let data = ColorUtil.buildColor(color, isEnabled, isSpeedEnabled, selectedSpeed)
+      let data = ColorUtil.buildColor(c:color,isEnabled: isEnabled,isSpeedEnabled: isSpeedEnabled,speed: selectedSpeed)
       writeUtil.writeValueToAll(data)
     }
   }
