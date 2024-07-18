@@ -24,7 +24,6 @@
 		90BF1DB42C1896D00097BA82 /* ColorSlidersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BF1DB32C1896D00097BA82 /* ColorSlidersView.swift */; };
 		90BF1DB62C1897BA0097BA82 /* ColorGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90BF1DB52C1897BA0097BA82 /* ColorGridView.swift */; };
 		90C57FB32C48B488002F7299 /* ColorCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90C57FB22C48B488002F7299 /* ColorCommand.swift */; };
-		90F7F1462C34DCA200F82EF3 /* AudioMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90F7F1452C34DCA200F82EF3 /* AudioMonitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,7 +60,6 @@
 		90BF1DB52C1897BA0097BA82 /* ColorGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorGridView.swift; sourceTree = "<group>"; };
 		90C57FB22C48B488002F7299 /* ColorCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCommand.swift; sourceTree = "<group>"; };
 		90DE94A82C104AB4007D2C0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		90F7F1452C34DCA200F82EF3 /* AudioMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,7 +112,6 @@
 			children = (
 				90999DD52C11FA6800644AFC /* BLEManager.swift */,
 				9068F9B42C1ACA0800646F00 /* DatabaseManager.swift */,
-				90F7F1452C34DCA200F82EF3 /* AudioMonitor.swift */,
 			);
 			path = manager;
 			sourceTree = "<group>";
@@ -242,7 +239,6 @@
 				9051D01F2C21D88200CD6F79 /* Constants.swift in Sources */,
 				90BF1DB62C1897BA0097BA82 /* ColorGridView.swift in Sources */,
 				9068F9B52C1ACA0800646F00 /* DatabaseManager.swift in Sources */,
-				90F7F1462C34DCA200F82EF3 /* AudioMonitor.swift in Sources */,
 				90011F302C19DDCE007D072B /* DeviceView.swift in Sources */,
 				9001BBF12C1DBDCB00E2CBD1 /* PointerDecoder.swift in Sources */,
 				90BF1DB42C1896D00097BA82 /* ColorSlidersView.swift in Sources */,

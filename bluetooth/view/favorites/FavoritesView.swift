@@ -16,7 +16,6 @@ struct FavoritesView: View {
   @State private var selectedSpeed: Double = 10.0
   @State private var isGroupEnabled = false
   @ObservedObject var bleManager = BLEManager.shared
-  @ObservedObject var audioMonitor = AudioMonitor.shared
   @State private var cancellables = Set<AnyCancellable>()
   var writeUtil = WriteDataUtil.shared
 

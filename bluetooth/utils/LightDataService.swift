@@ -9,7 +9,7 @@ import Foundation
 
 struct LightPreset {
     var time: Int // 毫秒
-    var color: String
+    var colorId: String
 }
 
 class LightDataService {
@@ -87,7 +87,7 @@ class LightDataService {
         
         // Fill lightDict with preset values
         for point in preset {
-            lightDict[point.time] = point.color
+            lightDict[point.time] = point.colorId
         }
         
         // Generate tweened light data
@@ -109,9 +109,9 @@ class LightDataService {
 
 func test(){
     let presets = [
-        LightPreset(time: 0, color: "red"),
-        LightPreset(time: 1000, color: "blue"),
-        LightPreset(time: 3000, color: "green")
+        LightPreset(time: 0, colorId: "red"),
+        LightPreset(time: 1000, colorId: "blue"),
+        LightPreset(time: 3000, colorId: "green")
     ]
 
     let service = LightDataService()
