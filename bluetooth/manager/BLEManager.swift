@@ -64,10 +64,9 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         } else {
             peripherals.append((peripheral, RSSI, localName, nil))
         }
-        
-      
-      //name.startsWith("MD") || name.startsWith("CD") || name.startsWith("B5") || name.startsWith("B2"))
-        if localName.hasPrefix("MD") || localName.hasPrefix("CD") || localName.hasPrefix("B5") || localName.hasPrefix("B2"){
+       
+        let hasPrefix = Constants.deviceNamePrefixes.contains { localName.hasPrefix($0) }
+        if hasPrefix{
             connect(to: peripheral)
         }
     }
@@ -102,8 +101,8 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         for service in services {
             if service.uuid == Constants.serviceUUID {
             print("discover services for peripheral: \(peripheral.identifier),service:\(service.uuid)")
-                peripheral.discoverCharacteristics(nil, for: service)
-              //  peripheral.discoverCharacteristics([characteristicUUID], for: service)
+              //  peripheral.discoverCharacteristics(nil, for: service)
+                peripheral.discoverCharacteristics([Constants.characteristicUUID], for: service)
             }
         }
     }

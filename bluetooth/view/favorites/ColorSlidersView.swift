@@ -21,7 +21,7 @@ struct ColorSlidersView: View {
                         .accentColor(Color(hue: hue, saturation: saturation, brightness: brightness))
                         .frame(minWidth: 0, maxWidth: .infinity) // 确保 Slider 占据尽可能多的空间
                     Text("H: \(hue*360, specifier: "%.0f")").foregroundStyle(Color.blue)
-                        .frame(width: 65, alignment: .leading) // 固定宽度以确保布局稳定
+                        .frame(width: 55, alignment: .leading) // 固定宽度以确保布局稳定
                 }
                 HStack{
                     Slider(value: $saturation, in: 0...1)
@@ -29,7 +29,7 @@ struct ColorSlidersView: View {
                         //.saturation(saturation)
                         .frame(minWidth: 0, maxWidth: .infinity) // 确保 Slider 占据尽可能多的空间
                     Text("S: \(saturation, specifier: "%.2f")").foregroundStyle(Color.blue)
-                        .frame(width: 65, alignment: .leading) // 固定宽度以确保布局稳定
+                        .frame(width: 55, alignment: .leading) // 固定宽度以确保布局稳定
                 }
                 HStack{
                     Slider(value: $brightness, in: 0...1)
@@ -37,7 +37,7 @@ struct ColorSlidersView: View {
                         //.brightness(brightness > 0.4 ? 0.4 : brightness)
                         .frame(minWidth: 0, maxWidth: .infinity) // 确保 Slider 占据尽可能多的空间
                     Text("L: \(brightness, specifier: "%.2f")").foregroundStyle(Color.blue)
-                        .frame(width: 65, alignment: .leading) // 固定宽度以确保布局稳定
+                        .frame(width: 55, alignment: .leading) // 固定宽度以确保布局稳定
                 }
                 let fksj = ColorUtil.argbToColor(argb: "#FF3F6C7D")
                 let aqws = ColorUtil.argbToColor(argb: "#FF4AC9E3")

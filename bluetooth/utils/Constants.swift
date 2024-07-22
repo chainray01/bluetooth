@@ -8,12 +8,15 @@
 import CoreBluetooth
 
 struct Constants {
-
+    // 私有化初始化方法，禁止实例化
+    private init() {}
+    
   //只能为Uint8 0～255
   static let maxSpeed: Double = 30.0
   static let serviceUUID = CBUUID(string: "00007610-0000-1000-8000-00805F9B34FB")
   static let characteristicUUID = CBUUID(string: "00007613-0000-1000-8000-00805F9B34FB")
- 
+  
+  static let deviceNamePrefixes: Set<String> = ["MD187A93", "CD187A93", "B5187A93", "B2187A93"]
     
   // 定义颜色映射
   static let colorMappings: [[String]] = [
