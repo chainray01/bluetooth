@@ -71,17 +71,9 @@ final class WriteDataUtil {
     
     func disconnectAll() {
         stopSending()
-        let data = ColorUtil.buildTurnOff()
-        writeValueToAll(data)
-        
         bleManager.connectedPeripherals.forEach { peripheral in
-            bleManager.centralManager.cancelPeripheralConnection(peripheral)
+            bleManager.disconnect(peripheral: peripheral)
         }
-        
-        bleManager.connectedPeripherals.removeAll()
-        bleManager.peripherals.removeAll()
-        bleManager.characteristics.removeAll()
-        
         print("Disconnected all peripherals")
     }
 }

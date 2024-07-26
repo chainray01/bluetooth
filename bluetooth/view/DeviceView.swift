@@ -73,7 +73,7 @@ struct DeviceView: View {
                         }
                     }) {
                         Label("断开所有设备连接", systemImage: "xmark.circle")
-                            .foregroundColor(bleManager.connectedPeripherals.count > 0 ? .blue : .gray)
+                            //.foregroundColor(bleManager.connectedPeripherals.count > 0 ? .blue : .gray)
                     }
                     .disabled(bleManager.connectedPeripherals.count == 0)
                 } label: {

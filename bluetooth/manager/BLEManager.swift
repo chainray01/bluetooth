@@ -147,10 +147,7 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
                 peripheral.writeValue(data, for: characteristic, type: .withResponse)
             }
         }
-        centralManager.cancelPeripheralConnection(peripheral)
-        connectedPeripherals.remove(peripheral)
-        peripherals.removeAll { $0.peripheral == peripheral }
-        characteristics.removeValue(forKey: peripheral)
+       // centralManager.cancelPeripheralConnection(peripheral)
     }
     
     func toggleScanning() {
