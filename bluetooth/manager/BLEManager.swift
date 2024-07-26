@@ -4,6 +4,7 @@
 //  BLE 控制器
 //  Created by Ray chai on 2024/6/8.
 //
+
 import CoreBluetooth
 
 final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
@@ -12,13 +13,13 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     @Published var connectedPeripherals: Set<CBPeripheral> = []
     @Published var characteristics: [CBPeripheral: [CBCharacteristic]] = [:]
     
-    var centralManager: CBCentralManager!
-    static let shared = BLEManager()
-    
-    private var scanTimer: Timer? = nil
+    private var centralManager: CBCentralManager!
+    private var scanTimer: Timer?
     private let centralQueue = DispatchQueue(label: "com.ray.centralQueue")
     
-    override private init() {
+    static let shared = BLEManager()
+    
+    private override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: nil, options: [CBCentralManagerOptionShowPowerAlertKey: true])
         print("BLEManager initialized")
@@ -57,15 +58,15 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         guard let localName = advertisementData[CBAdvertisementDataLocalNameKey] as? String else { return }
+        
         if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
             peripherals[index].rssi = RSSI
             peripherals[index].localName = localName
         } else {
             peripherals.append((peripheral, RSSI, localName, nil))
         }
-       
-        let hasPrefix = Constants.deviceNamePrefixes.contains { localName.hasPrefix($0) }
-        if hasPrefix {
+        
+        if Constants.deviceNamePrefixes.contains(where: localName.hasPrefix) {
             connect(to: peripheral)
         }
     }
@@ -83,12 +84,9 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        if let index = peripherals.firstIndex(where: { $0.peripheral == peripheral }) {
-            peripherals.remove(at: index)
-        }
         connectedPeripherals.remove(peripheral)
         characteristics.removeValue(forKey: peripheral)
-        
+        peripherals.removeAll { $0.peripheral == peripheral }
         if let error = error {
             print("Disconnected from peripheral: \(peripheral.identifier) with error: \(error.localizedDescription)")
         } else {
@@ -102,11 +100,9 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             return
         }
         
-        for service in services {
-            if service.uuid == Constants.serviceUUID {
-                print("Discovered service: \(service.uuid) for peripheral: \(peripheral.identifier)")
-                peripheral.discoverCharacteristics([Constants.characteristicUUID], for: service)
-            }
+        for service in services where service.uuid == Constants.serviceUUID {
+            print("Discovered service: \(service.uuid) for peripheral: \(peripheral.identifier)")
+            peripheral.discoverCharacteristics([Constants.characteristicUUID], for: service)
         }
     }
     
@@ -184,4 +180,3 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         RunLoop.main.add(scanTimer!, forMode: .common)
     }
 }
-
