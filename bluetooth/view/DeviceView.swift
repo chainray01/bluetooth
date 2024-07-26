@@ -66,16 +66,16 @@ struct DeviceView: View {
                         Label(showConnected ? "展示所有设备" : "筛选已连接的设备", systemImage: "line.horizontal.3.decrease.circle")
                     }
                     
-                    Button(action: {
-                        if bleManager.connectedPeripherals.count > 0 {
-                         //   bleManager.toggleScanning()
-                            writeData.disconnectAll()
-                        }
-                    }) {
-                        Label("断开所有设备连接", systemImage: "xmark.circle")
-                            //.foregroundColor(bleManager.connectedPeripherals.count > 0 ? .blue : .gray)
-                    }
-                    .disabled(bleManager.connectedPeripherals.count == 0)
+//                    Button(action: {
+//                        if bleManager.connectedPeripherals.count > 0 {
+//                         //   bleManager.toggleScanning()
+//                            writeData.disconnectAll()
+//                        }
+//                    }) {
+//                        Label("断开所有设备连接", systemImage: "xmark.circle")
+//                            //.foregroundColor(bleManager.connectedPeripherals.count > 0 ? .blue : .gray)
+//                    }
+//                    .disabled(bleManager.connectedPeripherals.count == 0)
                 } label: {
                     Image(systemName: "ellipsis")
                         .font(.title2).foregroundColor(Color.gray)

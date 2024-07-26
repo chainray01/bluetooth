@@ -147,7 +147,8 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
                 peripheral.writeValue(data, for: characteristic, type: .withResponse)
             }
         }
-       // centralManager.cancelPeripheralConnection(peripheral)
+       //断开连接后自动重连：断开连接后，除非您明确指示，否则设备不会自动重新连接。
+        //centralManager.cancelPeripheralConnection(peripheral)
     }
     
     func toggleScanning() {
