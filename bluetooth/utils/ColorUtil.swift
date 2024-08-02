@@ -33,8 +33,7 @@ struct ColorUtil {
     /// - Returns: [170, 161, 0, 146, 189, 255, 255, 20]
     static func buildColorData(
         _ red: UInt8, _ green: UInt8, _ blue: UInt8, _ isEnabled: Bool = true,
-        _ isSpeedEnabled: Bool = false, _ speed: Double
-    ) -> Data {
+        _ isSpeedEnabled: Bool = false, _ speed: Double ) -> Data {
         
         // Set the "enabled" and "speed" flags true255 /false0
         let enabledFlag: UInt8 = isEnabled ? 255 : 0
@@ -82,8 +81,7 @@ struct ColorUtil {
     ///   - isSpeedEnabled: 启用速度
     ///   - speed: 速度
     /// - Returns: data
-    static func buildColor(
-        c color: Color,  isEnabled: Bool = true, isSpeedEnabled: Bool = false,   speed: Double) -> Data {
+    static func buildColor(c color: Color,  isEnabled: Bool = true, isSpeedEnabled: Bool = false,   speed: Double) -> Data {
             let data = toRGBUInt8(color: color)
             return buildColorData(data.red, data.green, data.blue, isEnabled, isSpeedEnabled, speed)
         }

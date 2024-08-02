@@ -171,10 +171,11 @@ final class BLEManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     
     private func startTimer() {
         scanTimer?.invalidate()
-        scanTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { _ in
-            self.centralManager.scanForPeripherals(withServices: nil, options: nil)
+        scanTimer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: true) { [weak self] _ in
+            self?.centralManager.scanForPeripherals(withServices: nil, options: nil)
         }
         scanTimer?.fireDate = Date().addingTimeInterval(1)
-        RunLoop.main.add(scanTimer!, forMode: .common)
-    }
-}
+        if let scanTimer = scanTimer {
+            RunLoop.main.add(scanTimer, forMode: .common)
+        }
+    }}
